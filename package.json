@@ -1,0 +1,17 @@
+{
+    "name": "fantasy-critic-interim-bot",
+    "version": "0.1.0",
+    "description": "Fantasy Critic Interim Bot",
+    "main": "bot.js",
+    "author": "rardk64",
+    "scripts": {
+        "start": "node bot.js",
+        "pkgs": "npm install --no-optional"
+    },
+    "dependencies": {
+        "chariot.js": "^3.5.0",
+        "discord-lib": "github:rarDevelopment/discord-lib#1.6.2",
+        "dotenv": "^10.0.0",
+        "node-fetch": "^2.6.7"
+    }
+}
