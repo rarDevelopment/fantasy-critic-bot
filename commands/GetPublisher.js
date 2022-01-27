@@ -5,7 +5,6 @@ const MessageSender = require('discord-lib/MessageSender.js');
 const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
 const EmbedField = require('discord-lib/EmbedField.js')
 const Configurer = require('../settings/Configurer.js');
-const StringCleaner = require("../StringCleaner.js");
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const channelLeagueMap = require("../channelLeagueMap.json");
 
@@ -24,7 +23,6 @@ class GetPublisher extends Chariot.Command {
         this.Configurer = new Configurer();
         this.MessageSender = new MessageSender();
         this.MessageColors = new MessageColors();
-        this.StringCleaner = new StringCleaner();
     }
 
     async execute(msg, args, chariot) {
