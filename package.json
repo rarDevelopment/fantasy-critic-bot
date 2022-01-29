@@ -1,6 +1,6 @@
 {
     "name": "fantasy-critic-interim-bot",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Fantasy Critic Interim Bot",
     "main": "bot.js",
     "author": "rardk64",
@@ -12,6 +12,7 @@
         "chariot.js": "^3.5.0",
         "discord-lib": "github:rarDevelopment/discord-lib#1.6.2",
         "dotenv": "^10.0.0",
+        "mongoose": "^6.1.8",
         "node-fetch": "^2.6.7"
     }
 }

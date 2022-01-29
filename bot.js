@@ -1,4 +1,5 @@
 const Chariot = require("chariot.js");
+const mongoose = require("mongoose");
 require("dotenv").config();
 
 class FantasyCriticInterim extends Chariot.Client {
@@ -6,7 +7,7 @@ class FantasyCriticInterim extends Chariot.Client {
         super(new Chariot.Config(
             process.env.BOT_TOKEN,
             {
-                prefix: ["fc.", "Fc."],
+                prefix: ["fc.", "Fc.", "FC.", "fC."],
                 defaultHelpCommand: true,
                 primaryColor: 'ORANGE',
                 excludeDirectories: [],
@@ -21,6 +22,14 @@ class FantasyCriticInterim extends Chariot.Client {
                 //intents: 32571
             }
         ));
+
+        const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@discordbots.ywjdt.mongodb.net/fcinterimbot?retryWrites=true&w=majority`;
+
+        mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        mongoose.connection.once('open', function () {
+            console.log("Connected to MongoDB");
+        });
+
         this.editStatus('online', { name: 'fc.help', type: 0 });
     }
 }
