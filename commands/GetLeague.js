@@ -3,7 +3,6 @@ const MessageColors = require('discord-lib/MessageColors');
 const MessageReplyDetails = require('discord-lib/MessageReplyDetails.js');
 const MessageSender = require('discord-lib/MessageSender.js');
 const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
-const Configurer = require('../settings/Configurer.js');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const channelLeagueMap = require("../channelLeagueMap.json");
 
@@ -19,14 +18,13 @@ class GetLeague extends Chariot.Command {
             inline: true
         }
 
-        this.Configurer = new Configurer();
         this.MessageSender = new MessageSender();
         this.MessageColors = new MessageColors();
     }
 
     async execute(msg, args, chariot) {
         const leagueId = channelLeagueMap[0][msg.channel.id];
-        const leagueYearData = await FantasyCriticApi.getLeague(leagueId, new Date().getFullYear());
+        const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, new Date().getFullYear());
 
         let message = leagueYearData.publishers.sort((p1, p2) => {
             return p1.totalFantasyPoints > p2.totalFantasyPoints ? -1 : 1; //descending

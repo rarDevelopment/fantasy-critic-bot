@@ -4,7 +4,6 @@ const MessageReplyDetails = require('discord-lib/MessageReplyDetails.js');
 const MessageSender = require('discord-lib/MessageSender.js');
 const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
 const EmbedField = require('discord-lib/EmbedField.js')
-const Configurer = require('../settings/Configurer.js');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const channelLeagueMap = require("../channelLeagueMap.json");
 
@@ -20,7 +19,6 @@ class GetPublisher extends Chariot.Command {
             inline: true
         }
 
-        this.Configurer = new Configurer();
         this.MessageSender = new MessageSender();
         this.MessageColors = new MessageColors();
     }
@@ -40,7 +38,7 @@ class GetPublisher extends Chariot.Command {
         }
 
         const leagueId = channelLeagueMap[0][msg.channel.id];
-        const leagueYearData = await FantasyCriticApi.getLeague(leagueId, new Date().getFullYear());
+        const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, new Date().getFullYear());
 
         const foundByPlayerName = leagueYearData.publishers.filter(p => p.playerName.toLowerCase().includes(termToSearch));
         const foundByPublisherName = leagueYearData.publishers.filter(p => p.publisherName.toLowerCase().includes(termToSearch));

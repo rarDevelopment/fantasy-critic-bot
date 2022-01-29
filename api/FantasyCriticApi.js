@@ -2,18 +2,36 @@ const fetch = require('node-fetch');
 
 const baseUrl = "https://www.fantasycritic.games/api/";
 
-exports.getLeague = async function (leagueId, year) {
+exports.getLeague = async function (leagueId) {
+    const response = await fetch(`${baseUrl}league/getLeague/${leagueId}`);
+    if (response.status === 200) {
+        const data = await response.json();
+        if (!data) {
+            return null;
+        }
+        return {
+            leagueId: data.leagueID,
+            leagueName: data.leagueName,
+            players: data.players
+        };
+    }
+    return null;
+}
+
+exports.getLeagueYear = async function (leagueId, year) {
     const response = await fetch(`${baseUrl}league/getLeagueYear/?leagueID=${leagueId}&year=${year}`);
     const data = await response.json();
-    const publishers = data.publishers;
+    if (!data) {
+        return null;
+    }
     return {
         leagueId: data.leagueID,
         leagueYear: data.year,
-        publishers: publishers
+        publishers: data.publishers
     };
 }
 
-exports.getPublisher = async function (guid, year) {
+exports.getPublisher = async function (guid) {
     const response = await fetch(`${baseUrl}league/getPublisher/${guid}`);
     const data = await response.json();
     return data;

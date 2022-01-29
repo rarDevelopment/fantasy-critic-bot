@@ -4,7 +4,6 @@ const MessageReplyDetails = require('discord-lib/MessageReplyDetails.js');
 const MessageSender = require('discord-lib/MessageSender.js');
 const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
 const Message = require('discord-lib/Message');
-const Configurer = require('../settings/Configurer.js');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const channelLeagueMap = require("../channelLeagueMap.json");
 const FCDataLayer = require("../api/FCDataLayer.js");
@@ -21,14 +20,11 @@ class GetLeague extends Chariot.Command {
             inline: true
         }
 
-        this.Configurer = new Configurer();
         this.MessageSender = new MessageSender();
         this.MessageColors = new MessageColors();
     }
 
     async execute(msg, args, chariot) {
-        // const leagueId = channelLeagueMap[0][msg.channel.id];
-        // const leagueYearData = await FantasyCriticApi.getLeague(leagueId, new Date().getFullYear());
 
         const yearToCheck = new Date().getFullYear();
 
@@ -101,8 +97,6 @@ class GetLeague extends Chariot.Command {
             this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
         }
         else if (updatesToAnnounce.length > 0) {
-            //var allLeagues = channelLeagueMap[0];
-
             let message = `**Updates!**\n`;
             updatesToAnnounce.forEach(updateMessage => {
                 message += `${updateMessage}\n`;
