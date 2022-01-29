@@ -20,15 +20,19 @@ exports.getLeague = async function (leagueId) {
 
 exports.getLeagueYear = async function (leagueId, year) {
     const response = await fetch(`${baseUrl}league/getLeagueYear/?leagueID=${leagueId}&year=${year}`);
-    const data = await response.json();
-    if (!data) {
-        return null;
+    if (response.status === 200) {
+
+        const data = await response.json();
+        if (!data) {
+            return null;
+        }
+        return {
+            leagueId: data.leagueID,
+            leagueYear: data.year,
+            publishers: data.publishers
+        };
     }
-    return {
-        leagueId: data.leagueID,
-        leagueYear: data.year,
-        publishers: data.publishers
-    };
+    return null;
 }
 
 exports.getPublisher = async function (guid) {

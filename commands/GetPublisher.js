@@ -5,7 +5,7 @@ const MessageSender = require('discord-lib/MessageSender.js');
 const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
 const EmbedField = require('discord-lib/EmbedField.js')
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
-const channelLeagueMap = require("../channelLeagueMap.json");
+const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 
 class GetPublisher extends Chariot.Command {
     constructor() {
@@ -37,7 +37,13 @@ class GetPublisher extends Chariot.Command {
             return;
         }
 
-        const leagueId = channelLeagueMap[0][msg.channel.id];
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
+        if (!leagueChannel) {
+            this.MessageSender.sendErrorMessage("No league configuration found for this channel.", null, msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
+            return;
+        }
+
+        const leagueId = leagueChannel.leagueId;
         const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, new Date().getFullYear());
 
         const foundByPlayerName = leagueYearData.publishers.filter(p => p.playerName.toLowerCase().includes(termToSearch));

@@ -1,11 +1,8 @@
 const Chariot = require('chariot.js');
 const MessageColors = require('discord-lib/MessageColors');
-const MessageReplyDetails = require('discord-lib/MessageReplyDetails.js');
 const MessageSender = require('discord-lib/MessageSender.js');
-const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
 const Message = require('discord-lib/Message');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
-const channelLeagueMap = require("../channelLeagueMap.json");
 const FCDataLayer = require("../api/FCDataLayer.js");
 
 class GetLeague extends Chariot.Command {

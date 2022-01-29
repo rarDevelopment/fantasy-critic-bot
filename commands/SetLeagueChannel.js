@@ -19,21 +19,24 @@ class SetLeagueChannel extends Chariot.Command {
             example: ['setleague 11111111-aaaa-1111-aaaa-111111111111 2022'],
             inline: false
         }
+
+        this.MessageSender = new MessageSender();
+        this.MessageColors = new MessageColors();
     }
 
     async execute(msg, args, chariot) {
 
-        const messageSender = new MessageSender();
+        //const messageSender = new MessageSender();
 
         this.RoleHelper = new RoleHelper(resources.ownerId, [], resources.defaultAllowedPermissionNames);
 
         if (!this.RoleHelper.canAdministrate(msg.member)) {
-            messageSender.sendErrorMessage("You do not have permission to change this setting.", null, msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
+            this.MessageSender.sendErrorMessage("You do not have permission to change this setting.", null, msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
             return;
         }
 
         if (args.length < 2) {
-            messageSender.sendErrorMessage("Please provide both league ID and year.", args.join(" "), msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
+            this.MessageSender.sendErrorMessage("Please provide both league ID and year.", args.join(" "), msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
             return;
         }
 
@@ -42,7 +45,7 @@ class SetLeagueChannel extends Chariot.Command {
 
         const leagueYearData = await FantasyCriticApi.getLeague(leagueId);
         if (!leagueYearData) {
-            messageSender.sendErrorMessage("No league was found for that league ID and year combination.", args.join(" "), msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
+            this.MessageSender.sendErrorMessage("No league was found for that league ID and year combination.", args.join(" "), msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
             return;
         }
 
@@ -58,10 +61,10 @@ class SetLeagueChannel extends Chariot.Command {
                 new MessageReplyDetails(msg.id, false),
                 new MessageColors().RegularColor,
                 null);
-            messageSender.sendMessage(messageWithEmbed.buildMessage(), msg.channel, null);
+            this.MessageSender.sendMessage(messageWithEmbed.buildMessage(), msg.channel, null);
         }
         else {
-            messageSender.sendErrorMessage("Failed to set league for channel", msg.content, msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
+            this.MessageSender.sendErrorMessage("Failed to set league for channel", msg.content, msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
         }
     }
 }

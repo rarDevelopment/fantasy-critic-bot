@@ -4,7 +4,7 @@ const MessageReplyDetails = require('discord-lib/MessageReplyDetails.js');
 const MessageSender = require('discord-lib/MessageSender.js');
 const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
-const channelLeagueMap = require("../channelLeagueMap.json");
+const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 
 class GetLeague extends Chariot.Command {
     constructor() {
@@ -23,10 +23,22 @@ class GetLeague extends Chariot.Command {
     }
 
     async execute(msg, args, chariot) {
-        const leagueId = channelLeagueMap[0][msg.channel.id];
-        const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, new Date().getFullYear());
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
+        if (!leagueChannel) {
+            this.MessageSender.sendErrorMessage("No league configuration found for this channel.", null, msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
+            return;
+        }
 
-        let message = leagueYearData.publishers.sort((p1, p2) => {
+        const leagueId = leagueChannel.leagueId;
+        const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, new Date().getFullYear());
+        const leagueData = await FantasyCriticApi.getLeague(leagueId);
+
+        if (!leagueYearData || !leagueData) {
+            this.MessageSender.sendErrorMessage(`No league found with ID ${leagueId}.`, null, msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
+            return;
+        }
+
+        const message = leagueYearData.publishers.sort((p1, p2) => {
             return p1.totalFantasyPoints > p2.totalFantasyPoints ? -1 : 1; //descending
         })
             .map(p => `${p.publisherName} (${p.playerName}): **${p.totalFantasyPoints}**`)
@@ -34,7 +46,7 @@ class GetLeague extends Chariot.Command {
 
         const messageToSend = new MessageWithEmbed(
             message,
-            leagueYearData.leagueYear,
+            `${leagueData.leagueName} (${leagueYearData.leagueYear})`,
             null,
             `Requested by ${msg.author.username}`,
             new MessageReplyDetails(msg.id, true),
