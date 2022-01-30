@@ -49,7 +49,7 @@ class FantasyCriticInterim extends Chariot.Client {
         //     await LeagueUpdater.sendLeageUpdatesToLeagueChannels(this.guilds, leagueChannels);
         // });
 
-        cron.schedule(`*/30 * * * *`, async () => {
+        cron.schedule(`30 * * * *`, async () => {
             const leagueChannels = await ConfigDataLayer.getLeagueChannels();
             await ScoreUpdater.sendPublisherScoreUpdatesToLeagueChannels(this.guilds, leagueChannels);
         });
