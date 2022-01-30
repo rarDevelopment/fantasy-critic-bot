@@ -35,6 +35,18 @@ exports.getLeagueYear = async function (leagueId, year) {
     return null;
 }
 
+exports.getLeagueActions = async function (leagueId, year) {
+    const response = await fetch(`${baseUrl}league/getLeagueActions/?leagueID=${leagueId}&year=${year}`);
+    if (response.status === 200) {
+        const data = await response.json();
+        if (!data) {
+            return null;
+        }
+        return data;
+    }
+    return null;
+}
+
 exports.getPublisher = async function (guid) {
     const response = await fetch(`${baseUrl}league/getPublisher/${guid}`);
     const data = await response.json();

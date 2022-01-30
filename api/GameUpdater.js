@@ -71,27 +71,19 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
 
     const guildsToSend = guilds.filter(g => leagueChannels.map(l => l.guildId).includes(g.id));
 
-    //console.log(guildsToSend);
-    console.log("made it here")
-
     leagueChannels.forEach(leagueChannel => {
-        console.log("1", leagueChannel);
         const guildToSend = guildsToSend.find(g => g.id === leagueChannel.guildId);
         if (!guildToSend) {
             console.log(`Could not find guild with id ${leagueChannel.guildId}`)
             return;
         }
-        console.log("2", guildToSend.name, leagueChannel.channelId);
         const channelToSend = guildToSend.channels.find(c => c.id === leagueChannel.channelId);
-        console.log("2.5");
         if (!channelToSend) {
             console.log(`Could not find channel with id ${leagueChannel.channelId}`);
             return;
         }
 
-        console.log("3", channelToSend.name);
         if (updatesToAnnounce.length > 50) {
-            console.log(updatesToAnnounce);
             const messageToSend = new Message(
                 "Too many updates to send. Log has been created, please check it.",
                 null
@@ -99,8 +91,6 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
             messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
         }
         else if (updatesToAnnounce.length > 0) {
-            console.log("updates to announce");
-            console.log(updatesToAnnounce);
             let message = `**Updates!**\n`;
             updatesToAnnounce.forEach(updateMessage => {
                 message += `${updateMessage}\n`;

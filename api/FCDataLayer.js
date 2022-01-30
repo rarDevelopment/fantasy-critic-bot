@@ -1,7 +1,21 @@
 const { MasterGameListItem } = require("../models/MasterGameListItem");
+const { PublisherScore } = require("../models/PublisherScore.js");
+
+
+exports.getMasterGameList = async function (year) {
+    return MasterGameListItem.find({ year: year }).exec();
+}
+
+exports.getPublisherScores = async function (leagueId) {
+    return PublisherScore.find({ leagueID: leagueId }).exec();
+}
 
 function createMasterGameListItem(gameData) {
     return new MasterGameListItem(gameData);
+}
+
+function createPublisherScore(publisherScoreData) {
+    return new PublisherScore(publisherScoreData);
 }
 
 exports.updateMasterGameList = async function (gameData) {
@@ -26,6 +40,25 @@ exports.updateMasterGameList = async function (gameData) {
     }
 }
 
+exports.updatePublisherScores = async function (publisherScoreData) {
+    for (const p of publisherScoreData) {
+        await MasterGameListItem.findOne({ publisherID: p.publisherID, leagueID: p.leagueID }).exec()
+            .then(publisherScoreFound => {
+                if (!publisherScoreFound) {
+                    publisherScoreFound = createPublisherScore(p);
+                }
+                else {
+                    publisherScoreFound.totalFantasyPoints = p.totalFantasyPoints;
+                    publisherScoreFound.publisherName = p.publisherName;
+                    publisherScoreFound.playerName = p.playerName;
+                }
+                return publisherScoreFound.save().catch(err => {
+                    console.log("Error saving publisher score to DB", err);
+                });
+            });
+    }
+}
+
 //for initial loading
 exports.initMasterGameList = async function (gameData) {
     let count = 0;
@@ -39,6 +72,15 @@ exports.initMasterGameList = async function (gameData) {
     console.log("Finished updating!", count);
 }
 
-exports.getMasterGameList = async function (year) {
-    return MasterGameListItem.find({ year: year }).exec();
+exports.initPublisherScores = async function (publisherScores) {
+    let count = 0;
+    for (const p of publisherScores) {
+        const publisherScoreToAdd = createPublisherScore(p);
+        await publisherScoreToAdd.save().catch(err => {
+            console.log("Error saving publisher score to DB", err);
+        });
+        count += 1;
+    }
+    console.log("Finished saving publisher scores!", count);
 }
+
