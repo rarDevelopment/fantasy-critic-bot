@@ -1,5 +1,6 @@
 const { MasterGameListItem } = require("../models/MasterGameListItem");
 const { PublisherScore } = require("../models/PublisherScore.js");
+const { LastCheckTime } = require("../models/LastCheckTime.js");
 
 
 exports.getMasterGameList = async function (year) {
@@ -16,6 +17,32 @@ function createMasterGameListItem(gameData) {
 
 function createPublisherScore(publisherScoreData) {
     return new PublisherScore(publisherScoreData);
+}
+
+function createLastCheckTime(checkTimeData) {
+    return new LastCheckTime({
+        checkType: checkTimeData.checkType,
+        checkDate: checkTimeData.checkDate
+    });
+}
+
+exports.getLastCheckTime = async function (checkType) {
+    return await LastCheckTime.findOne({ checkType: checkType });
+}
+
+exports.updateLastCheckTime = async function (lastCheckTimeData) {
+    await LastCheckTime.findOne({ checkType: lastCheckTimeData.checkType }).exec()
+        .then(lastCheckTimeFound => {
+            if (!lastCheckTimeFound) {
+                lastCheckTimeFound = createLastCheckTime(lastCheckTimeData);
+            }
+            else {
+                lastCheckTimeFound.checkDate = lastCheckTimeData.checkDate;
+            }
+            return lastCheckTimeFound.save().catch(err => {
+                console.log("Error saving last check time to DB", err);
+            })
+        });
 }
 
 exports.updateMasterGameList = async function (gameData) {
