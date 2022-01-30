@@ -26,8 +26,6 @@ class SetLeagueChannel extends Chariot.Command {
 
     async execute(msg, args, chariot) {
 
-        //const messageSender = new MessageSender();
-
         this.RoleHelper = new RoleHelper(resources.ownerId, [], resources.defaultAllowedPermissionNames);
 
         if (!this.RoleHelper.canAdministrate(msg.member)) {

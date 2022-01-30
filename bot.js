@@ -1,6 +1,9 @@
 const Chariot = require("chariot.js");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const cron = require('node-cron');
+const GameUpdater = require('./api/GameUpdater.js');
+const ConfigDataLayer = require('./api/ConfigDataLayer.js');
 
 class FantasyCriticInterim extends Chariot.Client {
     constructor() {
@@ -31,6 +34,23 @@ class FantasyCriticInterim extends Chariot.Client {
         });
 
         this.editStatus('online', { name: 'fc.help', type: 0 });
+
+        this.guilds.forEach(g => {
+            console.log(g);
+        });
+
+        //cron schedule * 15 1,3,5,7,9,11,13,15,17,19,21,23 * *
+        //cron schedule * 15 15/2 * *
+        //const minutes = new Date().getMinutes() + 1;
+        //console.log("minutes", minutes);
+        cron.schedule(`15 0,2,4,6,8,10,12,14,16,18,20,22 * * *`, async () => {
+            // console.log("guilds", this.guilds);
+            console.log("running job")
+            const leagueChannels = await ConfigDataLayer.getLeagueChannels();
+            await GameUpdater.sendGameUpdatesToLeagueChannels(this.guilds, leagueChannels);
+            console.log("annnnd done");
+        });
+
     }
 }
 

@@ -12,6 +12,10 @@ function createLeagueChannelConfig(leagueId, channelId, guildId, guildName, year
     );
 }
 
+exports.getLeagueChannels = function () {
+    return LeagueChannel.find().exec();
+}
+
 exports.getLeagueChannel = function (channelId, guildId) {
     return LeagueChannel.findOne({ channelId: channelId, guildId: guildId }).exec();
 }

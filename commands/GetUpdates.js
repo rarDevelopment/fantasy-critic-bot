@@ -1,9 +1,12 @@
 const Chariot = require('chariot.js');
 const MessageColors = require('discord-lib/MessageColors');
 const MessageSender = require('discord-lib/MessageSender.js');
+const MessageReplyDetails = require('discord-lib/MessageReplyDetails.js');
 const Message = require('discord-lib/Message');
+const RoleHelper = require('discord-lib/RoleHelper.js');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const FCDataLayer = require("../api/FCDataLayer.js");
+const resources = require("../settings/resources.json");
 
 class GetLeague extends Chariot.Command {
     constructor() {
@@ -22,6 +25,13 @@ class GetLeague extends Chariot.Command {
     }
 
     async execute(msg, args, chariot) {
+
+        this.RoleHelper = new RoleHelper(resources.ownerId, [], resources.defaultAllowedPermissionNames);
+
+        if (!this.RoleHelper.canAdministrate(msg.member)) {
+            this.MessageSender.sendErrorMessage("You do not have permission to change this setting.", null, msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
+            return;
+        }
 
         const yearToCheck = new Date().getFullYear();
 
