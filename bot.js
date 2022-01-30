@@ -39,12 +39,7 @@ class FantasyCriticInterim extends Chariot.Client {
             console.log(g);
         });
 
-        //cron schedule * 15 1,3,5,7,9,11,13,15,17,19,21,23 * *
-        //cron schedule * 15 15/2 * *
-        //const minutes = new Date().getMinutes() + 1;
-        //console.log("minutes", minutes);
-        cron.schedule(`15 0,2,4,6,8,10,12,14,16,18,20,22 * * *`, async () => {
-            // console.log("guilds", this.guilds);
+        cron.schedule(`15 * * * *`, async () => {
             console.log("running job")
             const leagueChannels = await ConfigDataLayer.getLeagueChannels();
             await GameUpdater.sendGameUpdatesToLeagueChannels(this.guilds, leagueChannels);
