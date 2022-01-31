@@ -43,7 +43,7 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
                     else {
                         const scoreDiff = publisherInCache.totalFantasyPoints - publisherScoreToCheck.totalFantasyPoints;
                         const direction = scoreDiff < 0 ? "UP" : "DOWN";
-                        updatesToAnnounce.push(`**${nameToShow}**'s score has gone ${direction} from **${publisherInCache.totalFantasyPoints}** to **${publisherScoreToCheck.totalFantasyPoints}**`);
+                        updatesToAnnounce.push(`**${nameToShow}**'s score has gone **${direction}** from **${publisherInCache.totalFantasyPoints}** to **${publisherScoreToCheck.totalFantasyPoints}**`);
                     }
                 }
                 if (publisherScoreToCheck.publisherName !== publisherInCache.publisherName) {
@@ -57,6 +57,7 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
             }
         });
 
+        console.log(publisherScoreToCheck);
         await FCDataLayer.updatePublisherScores(publisherScoresToUpdate);
 
         const messageSender = new MessageSender();

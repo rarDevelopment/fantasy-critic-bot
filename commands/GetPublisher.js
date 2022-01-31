@@ -143,8 +143,11 @@ class GetPublisher extends Chariot.Command {
             null,
             `${publisherData.publisherName} (Player: ${publisherData.playerName})`,
             [
-                new EmbedField('PICKS', gamesMessage, false),
-                new EmbedField('COUNTERPICKS', counterPickMessage, false)
+                new EmbedField('Picks', gamesMessage, false),
+                new EmbedField('Counterpicks', counterPickMessage, false),
+                new EmbedField('Current Score', publisherData.totalFantasyPoints.toString(), false),
+                new EmbedField('Remaining Budget', `$${publisherData.budget.toString()}`, false),
+                new EmbedField('Drops Remaining (for games that Will Release)', publisherData.willReleaseDroppableGames, false),
             ],
             `Requested by ${msg.author.username}`,
             new MessageReplyDetails(msg.id, true),
@@ -155,7 +158,7 @@ class GetPublisher extends Chariot.Command {
     }
 
     makeGameMessage(g) {
-        let gameMsg = `**${g.gameName}**`;
+        let gameMsg = `${g.gameName}`;
         if (g.fantasyPoints) {
             gameMsg += ` - Score: ${g.criticScore} - Points: ${g.fantasyPoints}`;
         }

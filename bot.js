@@ -37,13 +37,13 @@ class FantasyCriticInterim extends Chariot.Client {
 
         this.editStatus('online', { name: 'fc.help', type: 0 });
 
+        // const minutes = new Date().getMinutes() + 1;
+        // console.log(minutes);
+
         cron.schedule(`15 * * * *`, async () => {
             const leagueChannels = await ConfigDataLayer.getLeagueChannels();
             await GameUpdater.sendGameUpdatesToLeagueChannels(this.guilds, leagueChannels);
         });
-
-        // const minutes = new Date().getMinutes() + 1;
-        // console.log(minutes);
         cron.schedule(`45 * * * *`, async () => {
             const leagueChannels = await ConfigDataLayer.getLeagueChannels();
             await LeagueUpdater.sendLeagueUpdatesToLeagueChannels(this.guilds, leagueChannels);

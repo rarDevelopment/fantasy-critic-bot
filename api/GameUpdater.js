@@ -23,15 +23,15 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
         else {
             if (gameToCheck.gameName !== gameInCache.gameName) {
                 gamesToUpdate.push(gameToCheck);
-                updatesToAnnounce.push(`Game Name Change: **${gameInCache.gameName}** renamed to **${gameToCheck.gameName}**`);
+                updatesToAnnounce.push(`**${gameInCache.gameName}** has been renamed to **${gameToCheck.gameName}**`);
             }
             if (gameToCheck.estimatedReleaseDate !== gameInCache.estimatedReleaseDate) {
                 gamesToUpdate.push(gameToCheck);
-                updatesToAnnounce.push(`Estimated Release Date Change: **${gameToCheck.gameName}** estimated release date changed from **${gameInCache.estimatedReleaseDate}** to **${gameToCheck.estimatedReleaseDate}**`);
+                updatesToAnnounce.push(`**The estimated release date for ${gameToCheck.gameName}** has changed from **${gameInCache.estimatedReleaseDate}** to **${gameToCheck.estimatedReleaseDate}**`);
             }
             if (gameToCheck.releaseDate !== gameInCache.releaseDate) {
                 gamesToUpdate.push(gameToCheck);
-                updatesToAnnounce.push(`Release Date Change: **${gameToCheck.gameName}** release date changed from **${gameInCache.releaseDate}** to **${gameToCheck.releaseDate}**`);
+                updatesToAnnounce.push(`The official release date for **${gameToCheck.gameName}** has changed from **${gameInCache.releaseDate}** to **${gameToCheck.releaseDate}**`);
             }
             if (gameToCheck.isReleased !== gameInCache.isReleased) {
                 gamesToUpdate.push(gameToCheck);
@@ -39,7 +39,7 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
                     updatesToAnnounce.push(`**${gameToCheck.gameName}** has released!`);
                 }
                 else {
-                    updatesToAnnounce.push(`**${gameToCheck.gameName}**'s status has changed to "not released" for some reason, check on this.`);
+                    updatesToAnnounce.push(`The status for **${gameToCheck.gameName}** has changed to "not released" for some reason, check on this.`);
                 }
             }
             if (gameToCheck.willRelease !== gameInCache.willRelease) {
@@ -59,7 +59,7 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
                 else {
                     const scoreDiff = gameInCache.criticScore - gameToCheck.criticScore;
                     const direction = scoreDiff < 0 ? "UP" : "DOWN";
-                    updatesToAnnounce.push(`Critic Score Change: **${gameToCheck.gameName}**'s critic score has gone **${direction}** from **${gameInCache.criticScore}** to **${gameToCheck.criticScore}**`);
+                    updatesToAnnounce.push(`The critic score for **${gameToCheck.gameName}** has gone **${direction}** from **${gameInCache.criticScore}** to **${gameToCheck.criticScore}**`);
                 }
             }
         }

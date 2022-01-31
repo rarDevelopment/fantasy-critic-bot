@@ -69,12 +69,13 @@ exports.updateMasterGameList = async function (gameData) {
 
 exports.updatePublisherScores = async function (publisherScoreData) {
     for (const p of publisherScoreData) {
-        await MasterGameListItem.findOne({ publisherID: p.publisherID, leagueID: p.leagueID }).exec()
+        await PublisherScore.findOne({ publisherID: p.publisherID, leagueID: p.leagueID }).exec()
             .then(publisherScoreFound => {
                 if (!publisherScoreFound) {
                     publisherScoreFound = createPublisherScore(p);
                 }
                 else {
+                    console.log(p);
                     publisherScoreFound.totalFantasyPoints = p.totalFantasyPoints;
                     publisherScoreFound.publisherName = p.publisherName;
                     publisherScoreFound.playerName = p.playerName;
