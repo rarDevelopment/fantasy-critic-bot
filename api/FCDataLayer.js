@@ -2,7 +2,6 @@ const { MasterGameListItem } = require("../models/MasterGameListItem");
 const { PublisherScore } = require("../models/PublisherScore.js");
 const { LastCheckTime } = require("../models/LastCheckTime.js");
 
-
 exports.getMasterGameList = async function (year) {
     return MasterGameListItem.find({ year: year }).exec();
 }

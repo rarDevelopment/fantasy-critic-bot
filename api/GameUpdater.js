@@ -27,11 +27,16 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
             }
             if (gameToCheck.estimatedReleaseDate !== gameInCache.estimatedReleaseDate) {
                 gamesToUpdate.push(gameToCheck);
-                updatesToAnnounce.push(`**The estimated release date for ${gameToCheck.gameName}** has changed from **${gameInCache.estimatedReleaseDate}** to **${gameToCheck.estimatedReleaseDate}**`);
+                updatesToAnnounce.push(`The estimated release date for **${gameToCheck.gameName}** has changed from **${gameInCache.estimatedReleaseDate}** to **${gameToCheck.estimatedReleaseDate}**`);
             }
             if (gameToCheck.releaseDate !== gameInCache.releaseDate) {
                 gamesToUpdate.push(gameToCheck);
-                updatesToAnnounce.push(`The official release date for **${gameToCheck.gameName}** has changed from **${gameInCache.releaseDate}** to **${gameToCheck.releaseDate}**`);
+                if (!gameInCache.releaseDate) {
+                    updatesToAnnounce.push(`**${gameToCheck.gameName} now has a release date: ${gameToCheck.releaseDate}`);
+                }
+                else {
+                    updatesToAnnounce.push(`The official release date for **${gameToCheck.gameName}** has changed from **${gameInCache.releaseDate}** to **${gameToCheck.releaseDate}**`);
+                }
             }
             if (gameToCheck.isReleased !== gameInCache.isReleased) {
                 gamesToUpdate.push(gameToCheck);
@@ -91,7 +96,7 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
             messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
         }
         else if (updatesToAnnounce.length > 0) {
-            let message = `**Updates!**\n`;
+            let message = `**Game Updates!**\n`;
             updatesToAnnounce.forEach(updateMessage => {
                 message += `${updateMessage}\n`;
             });
