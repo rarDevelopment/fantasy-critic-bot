@@ -30,7 +30,8 @@ class GetLeague extends Chariot.Command {
         }
 
         const leagueId = leagueChannel.leagueId;
-        const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, new Date().getFullYear());
+        const year = new Date().getFullYear();
+        const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, year);
         const leagueData = await FantasyCriticApi.getLeague(leagueId);
 
         if (!leagueYearData || !leagueData) {
@@ -38,11 +39,13 @@ class GetLeague extends Chariot.Command {
             return;
         }
 
-        const message = leagueYearData.publishers.sort((p1, p2) => {
+        let message = leagueYearData.publishers.sort((p1, p2) => {
             return p1.totalFantasyPoints > p2.totalFantasyPoints ? -1 : 1; //descending
         })
             .map(p => `${p.publisherName} (${p.playerName}): **${p.totalFantasyPoints}**`)
             .join("\n");
+
+        message += `\n\n[Visit League Page](https://www.fantasycritic.games/league/${leagueId}/${year})`;
 
         const messageToSend = new MessageWithEmbed(
             message,

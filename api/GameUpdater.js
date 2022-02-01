@@ -37,7 +37,7 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
             if (gameToCheck.releaseDate !== gameInCache.releaseDate) {
                 gamesToUpdate.push(gameToCheck);
                 if (!gameInCache.releaseDate) {
-                    updatesToAnnounce.push(`**${gameToCheck.gameName}** now has a release date: **${gameToCheck.releaseDate}`);
+                    updatesToAnnounce.push(`**${gameToCheck.gameName}** now has a release date: **${gameToCheck.releaseDate}**`);
                 }
                 else {
                     updatesToAnnounce.push(`The official release date for **${gameToCheck.gameName}** has changed from **${gameInCache.releaseDate}** to **${gameToCheck.releaseDate}**`);
