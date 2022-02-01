@@ -2,6 +2,7 @@ const Message = require('discord-lib/Message');
 const MessageSender = require('discord-lib/MessageSender.js');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const FCDataLayer = require("../api/FCDataLayer.js");
+const ScoreRounder = require("../api/ScoreRounder.js");
 
 exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
 
@@ -22,6 +23,11 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
 
         const publisherScoreCache = await FCDataLayer.getPublisherScores(leagueChannel.leagueId);
 
+        if (!publisherScoreCache || publisherScoreCache.length === 0) {
+            await FCDataLayer.initPublisherScores(publishersApiData);
+            continue;
+        }
+
         let publisherScoresToUpdate = [];
         let updatesToAnnounce = [];
 
@@ -41,9 +47,13 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
                         updatesToAnnounce.push(`**${nameToShow}** now has a score of **${publisherScoreToCheck.totalFantasyPoints}**`);
                     }
                     else {
-                        const scoreDiff = publisherInCache.totalFantasyPoints - publisherScoreToCheck.totalFantasyPoints;
-                        const direction = scoreDiff < 0 ? "UP" : "DOWN";
-                        updatesToAnnounce.push(`**${nameToShow}**'s score has gone **${direction}** from **${publisherInCache.totalFantasyPoints}** to **${publisherScoreToCheck.totalFantasyPoints}**`);
+                        const roundedCacheScore = ScoreRounder.round(publisherInCache.totalFantasyPoints, 1);
+                        const roundedApiScore = ScoreRounder.round(publisherScoreToCheck.totalFantasyPoints, 1);
+                        const scoreDiff = roundedCacheScore - roundedApiScore;
+                        if (scoreDiff !== 0) {
+                            const direction = scoreDiff < 0 ? "UP" : "DOWN";
+                            updatesToAnnounce.push(`**${nameToShow}**'s score has gone **${direction}** from **${roundedCacheScore}** to **${roundedApiScore}**`);
+                        }
                     }
                 }
                 if (publisherScoreToCheck.publisherName !== publisherInCache.publisherName) {

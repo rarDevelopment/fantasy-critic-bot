@@ -74,7 +74,6 @@ exports.updatePublisherScores = async function (publisherScoreData) {
                     publisherScoreFound = createPublisherScore(p);
                 }
                 else {
-                    console.log(p);
                     publisherScoreFound.totalFantasyPoints = p.totalFantasyPoints;
                     publisherScoreFound.publisherName = p.publisherName;
                     publisherScoreFound.playerName = p.playerName;

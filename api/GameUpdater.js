@@ -2,6 +2,7 @@ const Message = require('discord-lib/Message');
 const MessageSender = require('discord-lib/MessageSender.js');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const FCDataLayer = require("../api/FCDataLayer.js");
+const ScoreRounder = require("../api/ScoreRounder.js")
 
 exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
 
@@ -10,6 +11,10 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
     const masterGameYearApiData = await FantasyCriticApi.getMasterGameYear(yearToCheck);
 
     const masterGameCache = await FCDataLayer.getMasterGameList(yearToCheck);
+    if (!masterGameCache || masterGameCache.length === 0) {
+        await FCDataLayer.initMasterGameList(masterGameYearApiData);
+        return;
+    }
 
     let gamesToUpdate = [];
     let updatesToAnnounce = [];
@@ -32,7 +37,7 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
             if (gameToCheck.releaseDate !== gameInCache.releaseDate) {
                 gamesToUpdate.push(gameToCheck);
                 if (!gameInCache.releaseDate) {
-                    updatesToAnnounce.push(`**${gameToCheck.gameName} now has a release date: ${gameToCheck.releaseDate}`);
+                    updatesToAnnounce.push(`**${gameToCheck.gameName}** now has a release date: **${gameToCheck.releaseDate}`);
                 }
                 else {
                     updatesToAnnounce.push(`The official release date for **${gameToCheck.gameName}** has changed from **${gameInCache.releaseDate}** to **${gameToCheck.releaseDate}**`);
@@ -62,9 +67,13 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
                     updatesToAnnounce.push(`**${gameToCheck.gameName}** now has a critic score of ${gameToCheck.criticScore}.`);
                 }
                 else {
-                    const scoreDiff = gameInCache.criticScore - gameToCheck.criticScore;
-                    const direction = scoreDiff < 0 ? "UP" : "DOWN";
-                    updatesToAnnounce.push(`The critic score for **${gameToCheck.gameName}** has gone **${direction}** from **${gameInCache.criticScore}** to **${gameToCheck.criticScore}**`);
+                    const roundedCacheScore = ScoreRounder.round(gameInCache.criticScore, 1);
+                    const roundedApiScore = ScoreRounder.round(gameToCheck.criticScore, 1)
+                    const scoreDiff = roundedCacheScore - roundedApiScore;
+                    if (scoreDiff !== 0) {
+                        const direction = scoreDiff < 0 ? "UP" : "DOWN";
+                        updatesToAnnounce.push(`The critic score for **${gameToCheck.gameName}** has gone **${direction}** from **${roundedCacheScore}** to **${roundedApiScore}**`);
+                    }
                 }
             }
         }

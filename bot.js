@@ -28,7 +28,7 @@ class FantasyCriticInterim extends Chariot.Client {
             }
         ));
 
-        const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@discordbots.ywjdt.mongodb.net/fcinterimbot?retryWrites=true&w=majority`;
+        const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@discordbots.ywjdt.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
         mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
         mongoose.connection.once('open', function () {
@@ -44,14 +44,13 @@ class FantasyCriticInterim extends Chariot.Client {
             const leagueChannels = await ConfigDataLayer.getLeagueChannels();
             await GameUpdater.sendGameUpdatesToLeagueChannels(this.guilds, leagueChannels);
         });
-        cron.schedule(`45 * * * *`, async () => {
-            const leagueChannels = await ConfigDataLayer.getLeagueChannels();
-            await LeagueUpdater.sendLeagueUpdatesToLeagueChannels(this.guilds, leagueChannels);
-        });
-
         cron.schedule(`30 * * * *`, async () => {
             const leagueChannels = await ConfigDataLayer.getLeagueChannels();
             await ScoreUpdater.sendPublisherScoreUpdatesToLeagueChannels(this.guilds, leagueChannels);
+        });
+        cron.schedule(`45 * * * *`, async () => {
+            const leagueChannels = await ConfigDataLayer.getLeagueChannels();
+            await LeagueUpdater.sendLeagueUpdatesToLeagueChannels(this.guilds, leagueChannels);
         });
 
     }
