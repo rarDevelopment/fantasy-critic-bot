@@ -6,6 +6,7 @@ const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
 const EmbedField = require('discord-lib/EmbedField.js')
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
+const ScoreRounder = require('../api/ScoreRounder.js');
 
 class GetPublisher extends Chariot.Command {
     constructor() {
@@ -145,7 +146,7 @@ class GetPublisher extends Chariot.Command {
             [
                 new EmbedField('Picks', gamesMessage, false),
                 new EmbedField('Counterpicks', counterPickMessage, false),
-                new EmbedField('Current Score', publisherData.totalFantasyPoints.toString(), false),
+                new EmbedField('Current Score', ScoreRounder.round(publisherData.totalFantasyPoints, 1).toString(), false),
                 new EmbedField('Remaining Budget', `$${publisherData.budget.toString()}`, false),
                 new EmbedField('Drops Remaining (for games that Will Release)', publisherData.willReleaseDroppableGames, false),
             ],
@@ -160,7 +161,7 @@ class GetPublisher extends Chariot.Command {
     makeGameMessage(g) {
         let gameMsg = `${g.gameName}`;
         if (g.fantasyPoints) {
-            gameMsg += ` - Score: ${g.criticScore} - Points: ${g.fantasyPoints}`;
+            gameMsg += ` - Score: ${ScoreRounder.round(g.criticScore, 1)} - Points: ${ScoreRounder.round(g.fantasyPoints, 1)}`;
         }
         else {
             if (g.releaseDate) {
