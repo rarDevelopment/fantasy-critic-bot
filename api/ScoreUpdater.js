@@ -5,7 +5,6 @@ const FCDataLayer = require("../api/FCDataLayer.js");
 const ScoreRounder = require("../api/ScoreRounder.js");
 
 exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
-
     const yearToCheck = new Date().getFullYear();
     const guildsToSend = guilds.filter(g => leagueChannels.map(l => l.guildId).includes(g.id));
 
@@ -35,7 +34,6 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
             const publisherInCache = publisherScoreCache.find(p => p.publisherID === publisherScoreToCheck.publisherID);
 
             const nameToShow = `${publisherScoreToCheck.publisherName} (Player: ${publisherScoreToCheck.playerName})`;
-
             if (!publisherInCache) {
                 publisherScoresToUpdate.push(publisherScoreToCheck);
                 updatesToAnnounce.push(`**${nameToShow}** now has a score of **${publisherScoreToCheck.totalFantasyPoints}**`);
@@ -67,7 +65,6 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
             }
         });
 
-        console.log(publisherScoreToCheck);
         await FCDataLayer.updatePublisherScores(publisherScoresToUpdate);
 
         const messageSender = new MessageSender();
