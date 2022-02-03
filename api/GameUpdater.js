@@ -70,7 +70,7 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
                     const roundedCacheScore = ScoreRounder.round(gameInCache.criticScore, 1);
                     const roundedApiScore = ScoreRounder.round(gameToCheck.criticScore, 1)
                     const scoreDiff = roundedCacheScore - roundedApiScore;
-                    if (scoreDiff !== 0) {
+                    if (scoreDiff !== 0 && Math.abs(scoreDiff) >= 1) {
                         const direction = scoreDiff < 0 ? "UP" : "DOWN";
                         updatesToAnnounce.push(`The critic score for **${gameToCheck.gameName}** has gone **${direction}** from **${roundedCacheScore}** to **${roundedApiScore}**`);
                     }

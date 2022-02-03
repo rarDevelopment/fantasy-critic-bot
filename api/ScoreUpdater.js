@@ -50,7 +50,7 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
                         const roundedCacheScore = ScoreRounder.round(publisherInCache.totalFantasyPoints, 1);
                         const roundedApiScore = ScoreRounder.round(publisherScoreToCheck.totalFantasyPoints, 1);
                         const scoreDiff = roundedCacheScore - roundedApiScore;
-                        if (scoreDiff !== 0) {
+                        if (scoreDiff !== 0 && Math.abs(scoreDiff) >= 1) {
                             const direction = scoreDiff < 0 ? "UP" : "DOWN";
                             updatesToAnnounce.push(`**${nameToShow}**'s score has gone **${direction}** from **${roundedCacheScore}** to **${roundedApiScore}**`);
                         }
