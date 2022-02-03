@@ -64,7 +64,7 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
             if (gameToCheck.criticScore !== gameInCache.criticScore) {
                 gamesToUpdate.push(gameToCheck);
                 if (!gameInCache.criticScore) {
-                    updatesToAnnounce.push(`**${gameToCheck.gameName}** now has a critic score of ${gameToCheck.criticScore}.`);
+                    updatesToAnnounce.push(`**${gameToCheck.gameName}** now has a critic score of ${ScoreRounder.round(gameToCheck.criticScore, 1)}.`);
                 }
                 else {
                     const roundedCacheScore = ScoreRounder.round(gameInCache.criticScore, 1);
