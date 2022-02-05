@@ -1,7 +1,7 @@
 {
-    "name": "fantasy-critic-interim-bot",
-    "version": "1.4.4",
-    "description": "Fantasy Critic Interim Bot",
+    "name": "fantasy-critic-bot",
+    "version": "1.5.0",
+    "description": "Fantasy Critic Bot",
     "main": "bot.js",
     "author": "rardk64",
     "scripts": {
