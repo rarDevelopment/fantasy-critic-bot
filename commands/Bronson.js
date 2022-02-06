@@ -7,7 +7,7 @@ class Bronson extends Chariot.Command {
     constructor() {
         super();
         this.name = 'bronson';
-        this.cooldown = 2;
+        this.cooldown = 0;
         this.help = {
             message: `Justice is served.`,
             usage: 'bronson',
@@ -20,7 +20,7 @@ class Bronson extends Chariot.Command {
 
     async execute(msg, args, chariot) {
         const messageToSend = new Message(
-            "Just swiped $10 from Bronson's wallet :smirk:",
+            "Just swiped $20 from Bronson's wallet :smirk:",
             new MessageReplyDetails(msg.id, true)
         );
         this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);

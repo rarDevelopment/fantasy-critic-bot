@@ -36,13 +36,13 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
             const nameToShow = `${publisherScoreToCheck.publisherName} (Player: ${publisherScoreToCheck.playerName})`;
             if (!publisherInCache) {
                 publisherScoresToUpdate.push(publisherScoreToCheck);
-                updatesToAnnounce.push(`**${nameToShow}** now has a score of **${publisherScoreToCheck.totalFantasyPoints}**`);
+                updatesToAnnounce.push(`**${nameToShow}** now has a score of **${ScoreRounder.round(publisherScoreToCheck.totalFantasyPoints, 1)}**`);
             }
             else {
                 if (publisherScoreToCheck.totalFantasyPoints !== publisherInCache.totalFantasyPoints) {
                     publisherScoresToUpdate.push(publisherScoreToCheck);
                     if (!publisherInCache.totalFantasyPoints) {
-                        updatesToAnnounce.push(`**${nameToShow}** now has a score of **${publisherScoreToCheck.totalFantasyPoints}**`);
+                        updatesToAnnounce.push(`**${nameToShow}** now has a score of **${ScoreRounder.round(publisherScoreToCheck.totalFantasyPoints, 1)}**`);
                     }
                     else {
                         const roundedCacheScore = ScoreRounder.round(publisherInCache.totalFantasyPoints, 1);

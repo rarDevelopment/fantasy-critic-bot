@@ -13,7 +13,7 @@ class Version extends Chariot.Command {
         super();
         this.name = 'version';
         this.aliases = ["v"];
-        this.cooldown = 3;
+        this.cooldown = 0;
         this.help = {
             message: `Get the bot's version number.`,
             usage: 'version',
