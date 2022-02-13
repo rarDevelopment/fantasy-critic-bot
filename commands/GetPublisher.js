@@ -141,7 +141,7 @@ class GetPublisher extends Chariot.Command {
         const counterPickMessage = counterPickedGames.map(g => this.makeGameMessage(g)).join('\n');
 
         const messageToSend = new MessageWithEmbed(
-            null,
+            `[Visit Publisher Page](https://www.fantasycritic.games/publisher/${publisherGuid}/)`,
             `${publisherData.publisherName} (Player: ${publisherData.playerName})`,
             [
                 new EmbedField('Picks', gamesMessage, false),
