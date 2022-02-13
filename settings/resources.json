@@ -3,5 +3,6 @@
     "defaultAllowedPermissionNames": [
         "administrator"
     ],
-    "botPort": 3000
+    "botPort": 3000,
+    "maxMessageLength": 2000
 }

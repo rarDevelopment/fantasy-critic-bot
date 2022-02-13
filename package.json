@@ -1,6 +1,6 @@
 {
     "name": "fantasy-critic-bot",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "description": "Fantasy Critic Bot",
     "main": "bot.js",
     "author": "rardk64",
@@ -10,7 +10,7 @@
     },
     "dependencies": {
         "chariot.js": "^3.5.0",
-        "discord-lib": "github:rarDevelopment/discord-lib#1.6.2",
+        "discord-lib": "github:rarDevelopment/discord-lib#1.7.0",
         "dotenv": "^10.0.0",
         "http": "0.0.1-security",
         "luxon": "^2.3.0",
