@@ -2,5 +2,6 @@
     "ownerId": "234356032099450890",
     "defaultAllowedPermissionNames": [
         "administrator"
-    ]
+    ],
+    "botPort": 3000
 }

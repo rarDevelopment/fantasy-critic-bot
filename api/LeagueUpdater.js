@@ -55,10 +55,11 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (guilds, leagueChanne
                 null
             );
             messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
+            console.log(`Sent updates to channel ${channelToSend.id}`);
         }
         else {
             console.log("No updates to announce.", new Date());
         }
-
     }
+    console.log("Processed ALL league actions.");
 }

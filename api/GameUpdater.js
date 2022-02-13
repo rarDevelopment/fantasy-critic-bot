@@ -5,7 +5,6 @@ const FCDataLayer = require("../api/FCDataLayer.js");
 const ScoreRounder = require("../api/ScoreRounder.js")
 
 exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
-
     const yearToCheck = new Date().getFullYear();
 
     const masterGameYearApiData = await FantasyCriticApi.getMasterGameYear(yearToCheck);
@@ -114,9 +113,11 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
                 null
             );
             messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
+            console.log(`Sent updates to channel ${channelToSend.id}`);
         }
         else {
             console.log("No updates to announce.", new Date());
         }
     });
+    console.log("Processed ALL games.");
 }

@@ -89,10 +89,11 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
                 null
             );
             messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
+            console.log(`Sent updates to channel ${channelToSend.id}`);
         }
         else {
             console.log("No updates to announce.", new Date());
         }
     }
-    console.log("Updated ALL scores.");
+    console.log("Processed ALL publishers.");
 }
