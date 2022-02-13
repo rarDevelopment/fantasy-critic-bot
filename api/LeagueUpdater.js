@@ -11,17 +11,17 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (guilds, leagueChanne
     const yearToCheck = new Date().getFullYear();
     const guildsToSend = guilds.filter(g => leagueChannels.map(l => l.guildId).includes(g.id));
 
+    const currentDateToSave = DateTime.now().toISO();
+
     for (const leagueChannel of leagueChannels) {
 
         const leagueActions = await FantasyCriticApi.getLeagueActions(leagueChannel.leagueId, yearToCheck);
         const lastCheckTime = await FCDataLayer.getLastCheckTime(CheckTypes.LEAGUE_ACTION_CHECK);
-        const currentDateToSave = DateTime.now().toISO();
         if (!lastCheckTime) {
             console.log("creating");
             await FCDataLayer.updateLastCheckTime({ checkType: CheckTypes.LEAGUE_ACTION_CHECK, checkDate: currentDateToSave });
         }
         const lastCheckDate = DateTime.fromISO(lastCheckTime ? lastCheckTime.checkDate : currentDateToSave);
-
         const datedLeagueActions = leagueActions.map(leagueAction => {
             return {
                 date: DateTime.fromISO(leagueAction.timestamp),
@@ -33,7 +33,6 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (guilds, leagueChanne
         });
 
         const filteredLeagueActions = datedLeagueActions.filter(l => l.date > lastCheckDate);
-        await FCDataLayer.updateLastCheckTime({ checkType: CheckTypes.LEAGUE_ACTION_CHECK, checkDate: currentDateToSave });
         let updatesToAnnounce = filteredLeagueActions.map(l => `**${l.publisherName}** ${l.description} (at ${l.date.toLocaleString(DateTime.DATETIME_FULL)})`);
         const messageSender = new MessageSender();
 
@@ -69,5 +68,6 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (guilds, leagueChanne
             console.log("No updates to announce.", new Date());
         }
     }
+    await FCDataLayer.updateLastCheckTime({ checkType: CheckTypes.LEAGUE_ACTION_CHECK, checkDate: currentDateToSave });
     console.log("Processed ALL league actions.");
 }
