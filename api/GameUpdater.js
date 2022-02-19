@@ -2,10 +2,11 @@ const Message = require('discord-lib/Message');
 const MessageSender = require('discord-lib/MessageSender.js');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const FCDataLayer = require("../api/FCDataLayer.js");
-const ScoreRounder = require("../api/ScoreRounder.js")
+const ScoreRounder = require("../api/ScoreRounder.js");
+const resources = require("../settings/resources.json");
+const MessageArrayJoiner = require('discord-lib/MessageArrayJoiner.js');
 
 exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
-
     const yearToCheck = new Date().getFullYear();
 
     const masterGameYearApiData = await FantasyCriticApi.getMasterGameYear(yearToCheck);
@@ -97,26 +98,26 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
             return;
         }
 
-        if (updatesToAnnounce.length > 50) {
-            const messageToSend = new Message(
-                "Too many updates to send. Log has been created, please check it.",
-                null
-            );
-            messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
-        }
-        else if (updatesToAnnounce.length > 0) {
-            let message = `**Game Updates!**\n`;
-            updatesToAnnounce.forEach(updateMessage => {
-                message += `${updateMessage}\n`;
+        if (updatesToAnnounce.length > 0) {
+            const messageArrayJoiner = new MessageArrayJoiner();
+            const messageArray = messageArrayJoiner.buildMessageArrayFromStringArray(updatesToAnnounce, resources.maxMessageLength, `**Game Updates!**`);
+
+            if (messageArray.length > 10) {
+                console.log("Attempting to send more than 10 messages at once", messageArray);
+            }
+
+            messageArray.forEach(message => {
+                const messageToSend = new Message(
+                    message,
+                    null
+                );
+                messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
             });
-            const messageToSend = new Message(
-                message,
-                null
-            );
-            messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
+            console.log(`Sent updates to channel ${channelToSend.id}`);
         }
         else {
             console.log("No updates to announce.", new Date());
         }
     });
+    console.log("Processed ALL games.");
 }

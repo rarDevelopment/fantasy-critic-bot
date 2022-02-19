@@ -3,6 +3,8 @@ const MessageSender = require('discord-lib/MessageSender.js');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const FCDataLayer = require("../api/FCDataLayer.js");
 const ScoreRounder = require("../api/ScoreRounder.js");
+const resources = require("../settings/resources.json");
+const MessageArrayJoiner = require('discord-lib/MessageArrayJoiner.js');
 
 exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
     const yearToCheck = new Date().getFullYear();
@@ -79,20 +81,27 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
             console.log(`Could not find channel with id ${leagueChannel.channelId}`);
             return;
         }
+
         if (updatesToAnnounce.length > 0) {
-            let message = `**Publisher Updates!**\n`;
-            updatesToAnnounce.forEach(updateMessage => {
-                message += `${updateMessage}\n`;
+            const messageArrayJoiner = new MessageArrayJoiner();
+            const messageArray = messageArrayJoiner.buildMessageArrayFromStringArray(updatesToAnnounce, resources.maxMessageLength, `**Publisher Updates!**`);
+
+            if (messageArray.length > 10) {
+                console.log("Attempting to send more than 10 messages at once", messageArray);
+            }
+
+            messageArray.forEach(message => {
+                const messageToSend = new Message(
+                    message,
+                    null
+                );
+                messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
             });
-            const messageToSend = new Message(
-                message,
-                null
-            );
-            messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
+            console.log(`Sent updates to channel ${channelToSend.id}`);
         }
         else {
             console.log("No updates to announce.", new Date());
         }
     }
-    console.log("Updated ALL scores.");
+    console.log("Processed ALL publishers.");
 }

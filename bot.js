@@ -1,11 +1,7 @@
 const Chariot = require("chariot.js");
 const mongoose = require("mongoose");
 require("dotenv").config();
-const cron = require('node-cron');
-const GameUpdater = require('./api/GameUpdater.js');
-const LeagueUpdater = require('./api/LeagueUpdater.js');
-const ScoreUpdater = require('./api/ScoreUpdater.js');
-const ConfigDataLayer = require('./api/ConfigDataLayer.js');
+const SocketMessageListener = require('./jobs/SocketMessageListener.js');
 
 class FantasyCriticInterim extends Chariot.Client {
     constructor() {
@@ -15,7 +11,7 @@ class FantasyCriticInterim extends Chariot.Client {
                 prefix: ["fc.", "Fc.", "FC.", "fC."],
                 defaultHelpCommand: true,
                 primaryColor: 'ORANGE',
-                excludeDirectories: [],
+                excludeDirectories: ['jobs'],
                 owner: [
                     "234356032099450890"
                 ]
@@ -37,22 +33,7 @@ class FantasyCriticInterim extends Chariot.Client {
 
         this.editStatus('online', { name: 'fc.help', type: 0 });
 
-        // const minutes = new Date().getMinutes() + 1;
-        // console.log(minutes);
-
-        cron.schedule(`15 * * * *`, async () => {
-            const leagueChannels = await ConfigDataLayer.getLeagueChannels();
-            await GameUpdater.sendGameUpdatesToLeagueChannels(this.guilds, leagueChannels);
-        });
-        cron.schedule(`30 * * * *`, async () => {
-            const leagueChannels = await ConfigDataLayer.getLeagueChannels();
-            await ScoreUpdater.sendPublisherScoreUpdatesToLeagueChannels(this.guilds, leagueChannels);
-        });
-        cron.schedule(`45 * * * *`, async () => {
-            const leagueChannels = await ConfigDataLayer.getLeagueChannels();
-            await LeagueUpdater.sendLeagueUpdatesToLeagueChannels(this.guilds, leagueChannels);
-        });
-
+        SocketMessageListener.listenOnSocket(this.guilds);
     }
 }
 
