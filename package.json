@@ -1,6 +1,6 @@
 {
     "name": "fantasy-critic-bot",
-    "version": "1.7.3",
+    "version": "1.7.4",
     "description": "Fantasy Critic Bot",
     "main": "bot.js",
     "author": "rardk64",
