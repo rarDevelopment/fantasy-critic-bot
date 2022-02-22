@@ -5,6 +5,7 @@ const FCDataLayer = require("../api/FCDataLayer.js");
 const ScoreRounder = require("../api/ScoreRounder.js");
 const resources = require("../settings/resources.json");
 const MessageArrayJoiner = require('discord-lib/MessageArrayJoiner.js');
+const ranked = require('ranked');
 
 exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
     const yearToCheck = new Date().getFullYear();
@@ -22,29 +23,33 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
             };
         });
 
-        const publisherScoreCache = await FCDataLayer.getPublisherScores(leagueChannel.leagueId);
+        const publisherScoresCache = await FCDataLayer.getPublisherScores(leagueChannel.leagueId);
 
-        if (!publisherScoreCache || publisherScoreCache.length === 0) {
+        if (!publisherScoresCache || publisherScoresCache.length === 0) {
             await FCDataLayer.initPublisherScores(publishersApiData);
             continue;
         }
 
+        const rankedCache = ranked.ranking(publisherScoresCache, pubScore => pubScore.totalFantasyPoints);
+        const rankedApi = ranked.ranking(publishersApiData, pubScore => pubScore.totalFantasyPoints);
+
         let publisherScoresToUpdate = [];
         let updatesToAnnounce = [];
 
-        publishersApiData.forEach(publisherScoreToCheck => {
-            const publisherInCache = publisherScoreCache.find(p => p.publisherID === publisherScoreToCheck.publisherID);
+        rankedApi.forEach(rankedPublisher => {
+            const publisherScoreToCheck = rankedPublisher.item;
+            const publisherInCache = publisherScoresCache.find(p => p.publisherID === publisherScoreToCheck.publisherID);
 
             const nameToShow = `${publisherScoreToCheck.publisherName} (Player: ${publisherScoreToCheck.playerName})`;
             if (!publisherInCache) {
                 publisherScoresToUpdate.push(publisherScoreToCheck);
-                updatesToAnnounce.push(`**${nameToShow}** now has a score of **${ScoreRounder.round(publisherScoreToCheck.totalFantasyPoints, 1)}**`);
+                updatesToAnnounce.push(`**${nameToShow}** now has a score of **${ScoreRounder.round(publisherScoreToCheck.totalFantasyPoints, 1)}** and is now in **${formatRankNumber(rankedPublisher.rank)}** place.`);
             }
             else {
                 if (publisherScoreToCheck.totalFantasyPoints !== publisherInCache.totalFantasyPoints) {
                     publisherScoresToUpdate.push(publisherScoreToCheck);
                     if (!publisherInCache.totalFantasyPoints) {
-                        updatesToAnnounce.push(`**${nameToShow}** now has a score of **${ScoreRounder.round(publisherScoreToCheck.totalFantasyPoints, 1)}**`);
+                        updatesToAnnounce.push(`**${nameToShow}** now has a score of **${ScoreRounder.round(publisherScoreToCheck.totalFantasyPoints, 1)}** and is now in **${formatRankNumber(rankedPublisher.rank)}** place.`);
                     }
                     else {
                         const roundedCacheScore = ScoreRounder.round(publisherInCache.totalFantasyPoints, 1);
@@ -52,7 +57,11 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
                         const scoreDiff = roundedCacheScore - roundedApiScore;
                         if (scoreDiff !== 0 && Math.abs(scoreDiff) >= 1) {
                             const direction = scoreDiff < 0 ? "UP" : "DOWN";
-                            updatesToAnnounce.push(`**${nameToShow}**'s score has gone **${direction}** from **${roundedCacheScore}** to **${roundedApiScore}**`);
+                            let updateMessage = `**${nameToShow}**'s score has gone **${direction}** from **${roundedCacheScore}** to **${roundedApiScore}**`;
+                            if (didRankChange(publisherScoreToCheck.publisherID, rankedCache, rankedApi)) {
+                                updateMessage += ` and is now in **${formatRankNumber(rankedPublisher.rank)}** place.`;
+                            }
+                            updatesToAnnounce.push(updateMessage);
                         }
                     }
                 }
@@ -62,7 +71,6 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
                 }
                 if (publisherScoreToCheck.playerName !== publisherInCache.playerName) {
                     publisherScoresToUpdate.push(publisherScoreToCheck);
-                    //updatesToAnnounce.push(`Player **${publisherInCache.playerName}** is now known as ${publisherScoreToCheck.playerName}`);
                 }
             }
         });
@@ -104,4 +112,32 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
         }
     }
     console.log("Processed ALL publishers.");
+}
+
+function didRankChange(publisherId, rankCache, rankApi) {
+    const rankBefore = rankCache.find(p => p.item.publisherID === publisherId);
+    const rankAfter = rankApi.find(p => p.item.publisherID === publisherId);
+    if (!rankAfter) {
+        return false;
+    }
+    return rankBefore.rank !== rankAfter.rank;
+}
+
+function formatRankNumber(rankNumber) {
+    const numberToFormat = rankNumber.toString();
+    let suffix = "th";
+    if (!numberToFormat.endsWith("11")
+        && !numberToFormat.endsWith("12")
+        && !numberToFormat.endsWith("13")) {
+        if (numberToFormat.endsWith("1")) {
+            suffix = "st";
+        }
+        else if (numberToFormat.endsWith("2")) {
+            suffix = "nd";
+        }
+        else if (numberToFormat.endsWith("3")) {
+            suffix = "rd";
+        }
+    }
+    return `${numberToFormat}${suffix}`;
 }

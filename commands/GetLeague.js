@@ -6,6 +6,7 @@ const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
+const ranked = require('ranked');
 
 class GetLeague extends Chariot.Command {
     constructor() {
@@ -40,10 +41,12 @@ class GetLeague extends Chariot.Command {
             return;
         }
 
-        let message = leagueYearData.publishers.sort((p1, p2) => {
-            return p1.totalFantasyPoints > p2.totalFantasyPoints ? -1 : 1; //descending
+        const rankedPublishers = ranked.ranking(leagueYearData.publishers, pub => pub.totalFantasyPoints);
+
+        let message = rankedPublishers.sort((p1, p2) => {
+            return p1.rank > p2.rank ? 1 : -1;
         })
-            .map(p => `${p.publisherName} (${p.playerName}): **${ScoreRounder.round(p.totalFantasyPoints, 1)}**`)
+            .map(p => `${p.rank}. ${p.item.publisherName} (${p.item.playerName}): **${ScoreRounder.round(p.item.totalFantasyPoints, 1)}**`)
             .join("\n");
 
         message += `\n\n[Visit League Page](https://www.fantasycritic.games/league/${leagueId}/${year})`;
