@@ -1,6 +1,6 @@
 {
     "name": "fantasy-critic-bot",
-    "version": "1.7.3",
+    "version": "1.8.0",
     "description": "Fantasy Critic Bot",
     "main": "bot.js",
     "author": "rardk64",
@@ -16,6 +16,7 @@
         "luxon": "^2.3.0",
         "mongoose": "^6.2.2",
         "node-fetch": "^2.6.7",
+        "ranked": "^0.4.0",
         "ws": "^8.5.0"
     }
 }
