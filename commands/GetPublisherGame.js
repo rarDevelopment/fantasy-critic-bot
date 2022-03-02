@@ -119,7 +119,7 @@ class GetLeague extends Chariot.Command {
             .filter(g => g.counterPick === isCounterPick)
             .map(g => {
                 const scoreOrDate = `${g.isReleased ? (g.fantasyPoints !== null ? ScoreRounder.round(g.fantasyPoints, 1) : "0") + " points" : g.estimatedReleaseDate}`;
-                const gameName = g.masterGameId ? ` - [${g.gameName}](${resources.masterGameUrl}${g.masterGameId})` : g.gameName;
+                const gameName = g.masterGameId ? `[${g.gameName}](${resources.masterGameUrl}${g.masterGameId})` : g.gameName;
                 const gameString = `${publisher.publisherName} (${publisher.playerName}) - **${gameName}** (${scoreOrDate})`;
                 return gameString;
             });

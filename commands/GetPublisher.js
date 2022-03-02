@@ -161,9 +161,6 @@ class GetPublisher extends Chariot.Command {
 
     makeGameMessage(g) {
         let gameMsg = `${g.gameName}`;
-        // if (g.masterGame && g.masterGame.masterGameID) {
-        //     gameMsg = `[${g.gameName}](${resources.masterGameUrl}${g.masterGame.masterGameID})`;
-        // }
         if (g.fantasyPoints) {
             gameMsg += ` - Score: ${ScoreRounder.round(g.criticScore, 1)} - Points: ${ScoreRounder.round(g.fantasyPoints, 1)}`;
         }
