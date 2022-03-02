@@ -7,6 +7,7 @@ const EmbedField = require('discord-lib/EmbedField.js')
 const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
+const resources = require('../settings/resources.json');
 
 class GetPublisher extends Chariot.Command {
     constructor() {
@@ -141,7 +142,7 @@ class GetPublisher extends Chariot.Command {
         const counterPickMessage = counterPickedGames.map(g => this.makeGameMessage(g)).join('\n');
 
         const messageToSend = new MessageWithEmbed(
-            `[Visit Publisher Page](https://www.fantasycritic.games/publisher/${publisherGuid}/)`,
+            `[Visit Publisher Page](${resources.publisherUrl}${publisherGuid}/)`,
             `${publisherData.publisherName} (Player: ${publisherData.playerName})`,
             [
                 new EmbedField('Picks', gamesMessage, false),
@@ -160,6 +161,9 @@ class GetPublisher extends Chariot.Command {
 
     makeGameMessage(g) {
         let gameMsg = `${g.gameName}`;
+        // if (g.masterGame && g.masterGame.masterGameID) {
+        //     gameMsg = `[${g.gameName}](${resources.masterGameUrl}${g.masterGame.masterGameID})`;
+        // }
         if (g.fantasyPoints) {
             gameMsg += ` - Score: ${ScoreRounder.round(g.criticScore, 1)} - Points: ${ScoreRounder.round(g.fantasyPoints, 1)}`;
         }

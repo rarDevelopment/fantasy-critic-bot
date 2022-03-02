@@ -4,5 +4,7 @@
         "administrator"
     ],
     "botPort": 3000,
-    "maxMessageLength": 2000
+    "maxMessageLength": 2000,
+    "publisherUrl": "https://www.fantasycritic.games/publisher/",
+    "masterGameUrl": "https://www.fantasycritic.games/mastergame/"
 }

@@ -7,6 +7,7 @@ const FantasyCriticApi = require("../api/FantasyCriticApi.js");
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
 const EmbedField = require('discord-lib/EmbedField');
+const resources = require('../settings/resources.json');
 
 class GetLeague extends Chariot.Command {
     constructor() {
@@ -68,7 +69,8 @@ class GetLeague extends Chariot.Command {
                                 releaseDate: g.releaseDate,
                                 fantasyPoints: g.fantasyPoints,
                                 counterPick: g.counterPick,
-                                isReleased: g.masterGame.isReleased
+                                isReleased: g.masterGame.isReleased,
+                                masterGameId: g.masterGame.masterGameID
                             }
                         })
                 }
@@ -115,7 +117,12 @@ class GetLeague extends Chariot.Command {
     buildMessageFromGamesArray(games, publisher, isCounterPick) {
         return games
             .filter(g => g.counterPick === isCounterPick)
-            .map(g => `${publisher.publisherName} (${publisher.playerName}) - **${g.gameName}** (${g.isReleased ? (g.fantasyPoints !== null ? ScoreRounder.round(g.fantasyPoints, 1) : "0") + " points" : g.estimatedReleaseDate})`)
+            .map(g => {
+                const scoreOrDate = `${g.isReleased ? (g.fantasyPoints !== null ? ScoreRounder.round(g.fantasyPoints, 1) : "0") + " points" : g.estimatedReleaseDate}`;
+                const gameName = g.masterGameId ? ` - [${g.gameName}](${resources.masterGameUrl}${g.masterGameId})` : g.gameName;
+                const gameString = `${publisher.publisherName} (${publisher.playerName}) - **${gameName}** (${scoreOrDate})`;
+                return gameString;
+            });
     }
 
     stripAccentedCharactersAndStuff(text) {
