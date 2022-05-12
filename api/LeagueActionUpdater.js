@@ -1,8 +1,8 @@
 const Message = require('discord-helper-lib/Message');
 const MessageSender = require('discord-helper-lib/MessageSender.js');
-const FantasyCriticApi = require('../api/FantasyCriticApi.js');
-const FCDataLayer = require('../api/FCDataLayer.js');
-const CheckTypes = require('../api/CheckTypes.js');
+const FantasyCriticApi = require('./FantasyCriticApi.js');
+const FCDataLayer = require('./FCDataLayer.js');
+const CheckTypes = require('./CheckTypes.js');
 const { DateTime } = require('luxon');
 const resources = require('../settings/resources.json');
 const MessageArrayJoiner = require('discord-helper-lib/MessageArrayJoiner.js');

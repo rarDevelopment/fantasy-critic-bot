@@ -1,8 +1,8 @@
 const { createServer } = require('http');
 const ws = require('ws');
 const GameUpdater = require('../api/GameUpdater.js');
-const LeagueUpdater = require('../api/LeagueUpdater.js');
-const ScoreUpdater = require('../api/ScoreUpdater.js');
+const LeagueUpdater = require('../api/LeagueActionUpdater.js');
+const ScoreUpdater = require('../api/LeagueYearUpdater.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const resources = require('../settings/resources.json');
 const CheckTypes = require('../api/CheckTypes.js');
@@ -32,7 +32,7 @@ exports.listenOnSocket = function (guildsToProcess) {
                                 leagueChannels
                             );
                             break;
-                        case CheckTypes.SCORE_UPDATER_CHECK:
+                        case CheckTypes.LEAGUE_YEAR_UPDATER_CHECK:
                             await ScoreUpdater.sendPublisherScoreUpdatesToLeagueChannels(
                                 guildsToProcess,
                                 leagueChannels
