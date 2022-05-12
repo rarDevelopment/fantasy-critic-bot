@@ -26,7 +26,7 @@ class SetLeagueChannel extends Chariot.Command {
 
     async execute(msg, args, chariot) {
         this.RoleHelper = new RoleHelper(
-            resources.ownerId,
+            process.env.OWNER,
             [],
             resources.defaultAllowedPermissionNames
         );

@@ -13,7 +13,7 @@ class FantasyCriticInterim extends Chariot.Client {
                     defaultHelpCommand: true,
                     primaryColor: 'ORANGE',
                     excludeDirectories: ['jobs'],
-                    owner: ['234356032099450890'],
+                    owner: [process.env.OWNER],
                 },
                 {
                     messageLimit: 50,
@@ -24,7 +24,7 @@ class FantasyCriticInterim extends Chariot.Client {
             )
         );
 
-        const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@discordbots.ywjdt.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+        const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.MONGO_SUBDOMAIN}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
         mongoose.connect(uri, {
             useNewUrlParser: true,
