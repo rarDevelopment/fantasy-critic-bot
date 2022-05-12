@@ -13,6 +13,7 @@ exports.getLeague = async function (leagueId) {
             leagueId: data.leagueID,
             leagueName: data.leagueName,
             players: data.players,
+            years: data.years,
         };
     }
     return null;
@@ -30,6 +31,7 @@ exports.getLeagueYear = async function (leagueId, year) {
         return {
             leagueId: data.leagueID,
             leagueYear: data.year,
+            league: data.league,
             publishers: data.publishers,
         };
     }

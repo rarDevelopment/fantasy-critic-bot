@@ -58,10 +58,22 @@ class SetLeagueChannel extends Chariot.Command {
         const leagueId = args[0];
         const year = args[1];
 
-        const leagueYearData = await FantasyCriticApi.getLeague(leagueId);
-        if (!leagueYearData) {
+        const leagueData = await FantasyCriticApi.getLeague(leagueId);
+        if (!leagueData) {
             this.MessageSender.sendErrorMessage(
-                'No league was found for that league ID and year combination.',
+                'No league was found for that league ID.',
+                args.join(' '),
+                msg.author.username,
+                msg.channel,
+                new MessageReplyDetails(msg.id, true),
+                null
+            );
+            return;
+        }
+
+        if (!leagueData.years.includes(parseInt(year))) {
+            this.MessageSender.sendErrorMessage(
+                'That league is not active in the year requested.',
                 args.join(' '),
                 msg.author.username,
                 msg.channel,
@@ -80,7 +92,7 @@ class SetLeagueChannel extends Chariot.Command {
         );
 
         if (success) {
-            const messageText = `Channel Configured for ${leagueYearData.leagueName}`;
+            const messageText = `Channel Configured for ${leagueData.leagueName}`;
 
             const messageWithEmbed = new MessageWithEmbed(
                 messageText,
