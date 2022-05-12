@@ -95,8 +95,12 @@ class GetLeague extends Chariot.Command {
         if (player.previousYearWinner) {
             crownEmoji = ' 👑';
         }
+        let publisherIcon = '';
+        if (publisher.publisherIcon) {
+            publisherIcon = publisher.publisherIcon + ' ';
+        }
         let publisherLine = `**${rank}.** `;
-        publisherLine += `**${publisher.publisherName}** `;
+        publisherLine += `${publisherIcon}**${publisher.publisherName}** `;
         publisherLine += `(${publisher.playerName})${crownEmoji} \n`;
         publisherLine += `> **${ScoreRounder.round(
             publisher.totalFantasyPoints,
