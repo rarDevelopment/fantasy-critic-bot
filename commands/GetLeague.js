@@ -72,11 +72,13 @@ class GetLeague extends Chariot.Command {
             .map((p) => this.getPublisherLine(p.rank, p.item, p.item.publisher))
             .join('\n');
 
-        message += `\n\n[Visit League Page](https://www.fantasycritic.games/league/${leagueId}/${year})`;
+        const leagueLink = `https://www.fantasycritic.games/league/${leagueId}/${year}`;
+        message += `\n\n[Visit League Page](${leagueLink}})`;
+        const header = `${leagueYearData.league.leagueName} (${leagueYearData.leagueYear})`;
 
         const messageToSend = new MessageWithEmbed(
             message,
-            `${leagueYearData.league.leagueName} (${leagueYearData.leagueYear})`,
+            header,
             null,
             `Requested by ${msg.author.username}`,
             new MessageReplyDetails(msg.id, true),
