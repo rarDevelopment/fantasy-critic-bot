@@ -4,7 +4,7 @@ A bot for interacting with your [Fantasy Critic](https://www.fantasycritic.games
 
 ## Bot Features
 
-This bot will allow players to view information about the league, their rosters, and upcoming game release dates. Additionally, it will provide periodic updates on added games, league score updates, and league actions like bid wins and drops. 
+This bot will allow players to view information about the league, their rosters, and upcoming game release dates. Additionally, it will provide periodic updates on added games, league score updates, and league actions like bid wins and drops.
 
 **NOTE:** Public bidding and private leagues are not supported at this time.
 

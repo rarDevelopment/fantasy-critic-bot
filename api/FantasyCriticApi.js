@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const baseUrl = "https://www.fantasycritic.games/api/";
+const baseUrl = 'https://www.fantasycritic.games/api/';
 
 exports.getLeague = async function (leagueId) {
     const response = await fetch(`${baseUrl}league/getLeague/${leagueId}`);
@@ -12,16 +12,17 @@ exports.getLeague = async function (leagueId) {
         return {
             leagueId: data.leagueID,
             leagueName: data.leagueName,
-            players: data.players
+            players: data.players,
         };
     }
     return null;
-}
+};
 
 exports.getLeagueYear = async function (leagueId, year) {
-    const response = await fetch(`${baseUrl}league/getLeagueYear/?leagueID=${leagueId}&year=${year}`);
+    const response = await fetch(
+        `${baseUrl}league/getLeagueYear/?leagueID=${leagueId}&year=${year}`
+    );
     if (response.status === 200) {
-
         const data = await response.json();
         if (!data) {
             return null;
@@ -29,14 +30,16 @@ exports.getLeagueYear = async function (leagueId, year) {
         return {
             leagueId: data.leagueID,
             leagueYear: data.year,
-            publishers: data.publishers
+            publishers: data.publishers,
         };
     }
     return null;
-}
+};
 
 exports.getLeagueActions = async function (leagueId, year) {
-    const response = await fetch(`${baseUrl}league/getLeagueActions/?leagueID=${leagueId}&year=${year}`);
+    const response = await fetch(
+        `${baseUrl}league/getLeagueActions/?leagueID=${leagueId}&year=${year}`
+    );
     if (response.status === 200) {
         const data = await response.json();
         if (!data) {
@@ -45,10 +48,12 @@ exports.getLeagueActions = async function (leagueId, year) {
         return data;
     }
     return null;
-}
+};
 
 exports.getLeagueUpcoming = async function (leagueId, year) {
-    const response = await fetch(`${baseUrl}league/LeagueUpcomingGames/?leagueID=${leagueId}&year=${year}`);
+    const response = await fetch(
+        `${baseUrl}league/LeagueUpcomingGames/?leagueID=${leagueId}&year=${year}`
+    );
     if (response.status === 200) {
         const data = await response.json();
         if (!data) {
@@ -57,18 +62,18 @@ exports.getLeagueUpcoming = async function (leagueId, year) {
         return data;
     }
     return null;
-}
+};
 
 exports.getPublisher = async function (guid) {
     const response = await fetch(`${baseUrl}league/getPublisher/${guid}`);
     const data = await response.json();
     return data;
-}
+};
 
 exports.getMasterGameYear = async function (year) {
     const response = await fetch(`${baseUrl}game/mastergameyear/${year}`);
     const data = await response.json();
-    const mgyData = data.map(g => {
+    const mgyData = data.map((g) => {
         return {
             masterGameID: g.masterGameID,
             year: g.year,
@@ -79,7 +84,7 @@ exports.getMasterGameYear = async function (year) {
             willRelease: g.willRelease,
             criticScore: g.criticScore,
             addedTimestamp: g.addedTimestamp,
-        }
+        };
     });
     return mgyData;
-}
+};

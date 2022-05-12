@@ -6,16 +6,21 @@
     "author": "rardk64",
     "scripts": {
         "start": "node bot.js",
-        "pkgs": "npm install --no-optional"
+        "pkgs": "npm install --no-optional",
+        "lint": "eslint *.js --ignore-pattern node_modules/"
     },
     "dependencies": {
         "chariot.js": "^3.5.0",
         "discord-lib": "github:rarDevelopment/discord-lib#1.7.0",
         "dotenv": "^16.0.0",
+        "eslint": "^8.15.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.0.0",
         "http": "0.0.1-security",
         "luxon": "^2.3.0",
         "mongoose": "^6.2.2",
         "node-fetch": "^2.6.7",
+        "prettier": "^2.6.2",
         "ranked": "^0.4.0",
         "ws": "^8.5.0"
     }

@@ -1,10 +1,17 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const lastCheckTimeSchema = new mongoose.Schema({
-    checkType: String,
-    checkDate: String
-}, { collection: 'lastchecktime' });
+const lastCheckTimeSchema = new mongoose.Schema(
+    {
+        checkType: String,
+        checkDate: String,
+    },
+    { collection: 'lastchecktime' }
+);
 
 module.exports = {
-    LastCheckTime: mongoose.model('lastchecktime', lastCheckTimeSchema, 'lastchecktime')
-}
+    LastCheckTime: mongoose.model(
+        'lastchecktime',
+        lastCheckTimeSchema,
+        'lastchecktime'
+    ),
+};
