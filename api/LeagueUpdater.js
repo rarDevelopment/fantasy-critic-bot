@@ -64,7 +64,7 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (
             console.log(
                 `Could not find guild with id ${leagueChannel.guildId}`
             );
-            return;
+            continue;
         }
         const channelToSend = guildToSend.channels.find(
             (c) => c.id === leagueChannel.channelId
@@ -73,7 +73,7 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (
             console.log(
                 `Could not find channel with id ${leagueChannel.channelId}`
             );
-            return;
+            continue;
         }
 
         if (updatesToAnnounce.length > 0) {
