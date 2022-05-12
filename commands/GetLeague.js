@@ -7,6 +7,7 @@ const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
 const ranked = require('ranked');
+const DateCleaner = require('../api/DateCleaner.js');
 
 class GetLeague extends Chariot.Command {
     constructor() {
@@ -70,7 +71,7 @@ class GetLeague extends Chariot.Command {
                 return p1.rank > p2.rank ? 1 : -1;
             })
             .map((p) => this.getPublisherLine(p.rank, p.item, p.item.publisher))
-            .join('\n\n');
+            .join('\n');
 
         const leagueLink = `https://www.fantasycritic.games/league/${leagueId}/${year}`;
         const header = `${leagueYearData.league.leagueName} (${leagueYearData.leagueYear})`;
@@ -103,7 +104,7 @@ class GetLeague extends Chariot.Command {
         if (publisher.publisherIcon) {
             publisherIcon = publisher.publisherIcon + ' ';
         }
-        let publisherLine = `> **${rank}.** `;
+        let publisherLine = `**${rank}.** `;
         publisherLine += `${publisherIcon}**${publisher.publisherName}** `;
         publisherLine += `(${publisher.playerName})${crownEmoji} \n`;
         publisherLine += `> **${ScoreRounder.round(
@@ -124,10 +125,20 @@ class GetLeague extends Chariot.Command {
     getGameNews(gameNews) {
         let message = '';
         if (gameNews.recentGames.length > 0) {
-            message += 'A game came out recently.\n';
+            const masterGame = gameNews.recentGames[0].masterGame;
+            const publisherName = gameNews.recentGames[0].publisherName;
+            const releaseDate = DateCleaner.clean(
+                masterGame.estimatedReleaseDate
+            );
+            message += `Most recent release: **${masterGame.gameName}** on ${releaseDate} for ${publisherName}\n`;
         }
         if (gameNews.upcomingGames.length > 0) {
-            message += 'A game will come out.\n';
+            const masterGame = gameNews.upcomingGames[0].masterGame;
+            const publisherName = gameNews.upcomingGames[0].publisherName;
+            const releaseDate = DateCleaner.clean(
+                masterGame.estimatedReleaseDate
+            );
+            message += `Next expected release: **${masterGame.gameName}** on ${releaseDate} for ${publisherName}\n`;
         }
 
         return message;
