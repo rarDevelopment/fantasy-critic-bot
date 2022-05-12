@@ -47,9 +47,8 @@ class GetLeague extends Chariot.Command {
             leagueId,
             year
         );
-        const leagueData = await FantasyCriticApi.getLeague(leagueId);
 
-        if (!leagueYearData || !leagueData) {
+        if (!leagueYearData) {
             this.MessageSender.sendErrorMessage(
                 `No league found with ID ${leagueId}.`,
                 null,
@@ -62,7 +61,7 @@ class GetLeague extends Chariot.Command {
         }
 
         const rankedPublishers = ranked.ranking(
-            leagueYearData.publishers,
+            leagueYearData.players,
             (pub) => pub.totalFantasyPoints
         );
 
@@ -70,19 +69,14 @@ class GetLeague extends Chariot.Command {
             .sort((p1, p2) => {
                 return p1.rank > p2.rank ? 1 : -1;
             })
-            .map(
-                (p) =>
-                    `${p.rank}. ${p.item.publisherName} (${
-                        p.item.playerName
-                    }): **${ScoreRounder.round(p.item.totalFantasyPoints, 1)}**`
-            )
+            .map((p) => this.getPublisherLine(p.rank, p.item, p.item.publisher))
             .join('\n');
 
         message += `\n\n[Visit League Page](https://www.fantasycritic.games/league/${leagueId}/${year})`;
 
         const messageToSend = new MessageWithEmbed(
             message,
-            `${leagueData.leagueName} (${leagueYearData.leagueYear})`,
+            `${leagueYearData.league.leagueName} (${leagueYearData.leagueYear})`,
             null,
             `Requested by ${msg.author.username}`,
             new MessageReplyDetails(msg.id, true),
@@ -94,6 +88,27 @@ class GetLeague extends Chariot.Command {
             msg.channel,
             null
         );
+    }
+
+    getPublisherLine(rank, player, publisher) {
+        let crownEmoji = '';
+        if (player.previousYearWinner) {
+            crownEmoji = ' 👑';
+        }
+        let publisherLine = `**${rank}.** `;
+        publisherLine += `**${publisher.publisherName}** `;
+        publisherLine += `(${publisher.playerName})${crownEmoji} \n`;
+        publisherLine += `> **${ScoreRounder.round(
+            publisher.totalFantasyPoints,
+            1
+        )} points** `;
+        publisherLine += `*(Projected: ${ScoreRounder.round(
+            publisher.totalProjectedPoints,
+            1
+        )})*\n`;
+        publisherLine += `> ${publisher.gamesReleased}/${publisher.gamesWillRelease} games released`;
+
+        return publisherLine;
     }
 }
 module.exports = new GetLeague();
