@@ -34,6 +34,7 @@ exports.getLeagueYear = async function (leagueId, year) {
             league: data.league,
             publishers: data.publishers,
             players: data.players,
+            gameNews: data.gameNews,
         };
     }
     return null;

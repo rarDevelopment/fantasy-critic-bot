@@ -70,11 +70,13 @@ class GetLeague extends Chariot.Command {
                 return p1.rank > p2.rank ? 1 : -1;
             })
             .map((p) => this.getPublisherLine(p.rank, p.item, p.item.publisher))
-            .join('\n');
+            .join('\n\n');
 
         const leagueLink = `https://www.fantasycritic.games/league/${leagueId}/${year}`;
-        message += `\n\n[Visit League Page](${leagueLink}})`;
         const header = `${leagueYearData.league.leagueName} (${leagueYearData.leagueYear})`;
+
+        message += '\n\n' + this.getGameNews(leagueYearData.gameNews);
+        message += `\n[Visit League Page](${leagueLink}})`;
 
         const messageToSend = new MessageWithEmbed(
             message,
@@ -101,7 +103,7 @@ class GetLeague extends Chariot.Command {
         if (publisher.publisherIcon) {
             publisherIcon = publisher.publisherIcon + ' ';
         }
-        let publisherLine = `**${rank}.** `;
+        let publisherLine = `> **${rank}.** `;
         publisherLine += `${publisherIcon}**${publisher.publisherName}** `;
         publisherLine += `(${publisher.playerName})${crownEmoji} \n`;
         publisherLine += `> **${ScoreRounder.round(
@@ -112,9 +114,23 @@ class GetLeague extends Chariot.Command {
             publisher.totalProjectedPoints,
             1
         )})*\n`;
-        publisherLine += `> ${publisher.gamesReleased}/${publisher.gamesWillRelease} games released`;
+        publisherLine += `> ${publisher.gamesReleased}/${
+            publisher.gamesWillRelease + publisher.gamesReleased
+        } games released`;
 
         return publisherLine;
+    }
+
+    getGameNews(gameNews) {
+        let message = '';
+        if (gameNews.recentGames.length > 0) {
+            message += 'A game came out recently.\n';
+        }
+        if (gameNews.upcomingGames.length > 0) {
+            message += 'A game will come out.\n';
+        }
+
+        return message;
     }
 }
 module.exports = new GetLeague();
