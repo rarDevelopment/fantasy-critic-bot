@@ -13,16 +13,26 @@ class GetLeagueLink extends Chariot.Command {
             message: `Get a direct link to your league page.`,
             usage: 'link',
             example: ['link'],
-            inline: true
-        }
+            inline: true,
+        };
 
         this.MessageSender = new MessageSender();
     }
 
     async execute(msg, args, chariot) {
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(
+            msg.channel.id,
+            msg.guildID
+        );
         if (!leagueChannel) {
-            this.MessageSender.sendErrorMessage("No league configuration found for this channel.", null, msg.author.username, msg.channel, new MessageReplyDetails(msg.id, true), null);
+            this.MessageSender.sendErrorMessage(
+                'No league configuration found for this channel.',
+                null,
+                msg.author.username,
+                msg.channel,
+                new MessageReplyDetails(msg.id, true),
+                null
+            );
             return;
         }
 
@@ -35,7 +45,11 @@ class GetLeagueLink extends Chariot.Command {
             leagueUrl,
             new MessageReplyDetails(msg.id, true)
         );
-        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
+        this.MessageSender.sendMessage(
+            messageToSend.buildMessage(),
+            msg.channel,
+            null
+        );
     }
 }
 module.exports = new GetLeagueLink();

@@ -10,4 +10,4 @@ exports.clean = function (date) {
         return dateParsed.toLocaleString(DateTime.DATE_HUGE);
     }
     return date;
-}
+};

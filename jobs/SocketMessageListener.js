@@ -12,7 +12,7 @@ exports.listenOnSocket = function (guildsToProcess) {
     server.listen(resources.botPort);
 
     const wsServer = new ws.Server({
-        server
+        server,
     });
 
     let connections = [];
@@ -23,31 +23,42 @@ exports.listenOnSocket = function (guildsToProcess) {
             try {
                 const payload = JSON.parse(msg);
                 if (payload.checkToDo) {
-                    const leagueChannels = await ConfigDataLayer.getLeagueChannels();
+                    const leagueChannels =
+                        await ConfigDataLayer.getLeagueChannels();
                     switch (payload.checkToDo) {
                         case CheckTypes.GAME_UPDATER_CHECK:
-                            await GameUpdater.sendGameUpdatesToLeagueChannels(guildsToProcess, leagueChannels);
+                            await GameUpdater.sendGameUpdatesToLeagueChannels(
+                                guildsToProcess,
+                                leagueChannels
+                            );
                             break;
                         case CheckTypes.SCORE_UPDATER_CHECK:
-                            await ScoreUpdater.sendPublisherScoreUpdatesToLeagueChannels(guildsToProcess, leagueChannels);
+                            await ScoreUpdater.sendPublisherScoreUpdatesToLeagueChannels(
+                                guildsToProcess,
+                                leagueChannels
+                            );
                             break;
                         case CheckTypes.LEAGUE_ACTION_CHECK:
-                            await LeagueUpdater.sendLeagueUpdatesToLeagueChannels(guildsToProcess, leagueChannels);
+                            await LeagueUpdater.sendLeagueUpdatesToLeagueChannels(
+                                guildsToProcess,
+                                leagueChannels
+                            );
                             break;
                         default:
-                            console.log("Received invalid check option", payload.checkToDo);
+                            console.log(
+                                'Received invalid check option',
+                                payload.checkToDo
+                            );
                     }
+                } else {
+                    console.log('Received invalid payload', payload);
                 }
-                else {
-                    console.log("Received invalid payload", payload);
-                }
-            }
-            catch (error) {
-                console.log("Error handling message on WebSocket", error);
+            } catch (error) {
+                console.log('Error handling message on WebSocket', error);
             }
         });
         socket.on('close', () => {
-            connections = connections.filter(s => s !== socket);
-        })
+            connections = connections.filter((s) => s !== socket);
+        });
     });
-}
+};

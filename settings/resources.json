@@ -1,8 +1,6 @@
 {
     "ownerId": "234356032099450890",
-    "defaultAllowedPermissionNames": [
-        "administrator"
-    ],
+    "defaultAllowedPermissionNames": ["administrator"],
     "botPort": 3000,
     "maxMessageLength": 2000,
     "publisherUrl": "https://www.fantasycritic.games/publisher/",

@@ -14,4 +14,4 @@ exports.sendMessageOnSocket = function (checkTypeToSend) {
     ws.on('error', () => {
         console.log('server offline');
     });
-}
+};
