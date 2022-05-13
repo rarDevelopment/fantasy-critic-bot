@@ -1,7 +1,7 @@
 const Chariot = require('chariot.js');
-const MessageReplyDetails = require('discord-lib/MessageReplyDetails.js');
-const MessageSender = require('discord-lib/MessageSender.js');
-const Message = require('discord-lib/Message.js');
+const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
+const MessageSender = require('discord-helper-lib/MessageSender.js');
+const Message = require('discord-helper-lib/Message.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 
 class GetLeagueLink extends Chariot.Command {

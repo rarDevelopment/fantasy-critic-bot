@@ -1,10 +1,10 @@
-const Message = require('discord-lib/Message');
-const MessageSender = require('discord-lib/MessageSender.js');
+const Message = require('discord-helper-lib/Message');
+const MessageSender = require('discord-helper-lib/MessageSender.js');
 const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const FCDataLayer = require('../api/FCDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
 const resources = require('../settings/resources.json');
-const MessageArrayJoiner = require('discord-lib/MessageArrayJoiner.js');
+const MessageArrayJoiner = require('discord-helper-lib/MessageArrayJoiner.js');
 
 exports.sendGameUpdatesToLeagueChannels = async function (
     guilds,
@@ -90,8 +90,7 @@ exports.sendGameUpdatesToLeagueChannels = async function (
                 gamesToUpdate.push(gameToCheck);
                 if (!gameInCache.criticScore) {
                     updatesToAnnounce.push(
-                        `**${
-                            gameToCheck.gameName
+                        `**${gameToCheck.gameName
                         }** now has a critic score of ${ScoreRounder.round(
                             gameToCheck.criticScore,
                             1
