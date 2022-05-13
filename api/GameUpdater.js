@@ -90,7 +90,8 @@ exports.sendGameUpdatesToLeagueChannels = async function (
                 gamesToUpdate.push(gameToCheck);
                 if (!gameInCache.criticScore) {
                     updatesToAnnounce.push(
-                        `**${gameToCheck.gameName
+                        `**${
+                            gameToCheck.gameName
                         }** now has a critic score of ${ScoreRounder.round(
                             gameToCheck.criticScore,
                             1

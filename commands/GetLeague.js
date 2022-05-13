@@ -72,7 +72,8 @@ class GetLeague extends Chariot.Command {
             })
             .map(
                 (p) =>
-                    `${p.rank}. ${p.item.publisherName} (${p.item.playerName
+                    `${p.rank}. ${p.item.publisherName} (${
+                        p.item.playerName
                     }): **${ScoreRounder.round(p.item.totalFantasyPoints, 1)}**`
             )
             .join('\n');

@@ -51,7 +51,8 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (
         );
         let updatesToAnnounce = filteredLeagueActions.map(
             (l) =>
-                `**${l.publisherName}** ${l.description
+                `**${l.publisherName}** ${
+                    l.description
                 } (at ${l.date.toLocaleString(DateTime.DATETIME_FULL)})`
         );
         const messageSender = new MessageSender();
