@@ -8,6 +8,7 @@ const CheckTypes = require('./CheckTypes.js');
 const { DateTime } = require('luxon');
 const PublisherScoreSubUpdater = require('./SubUpdaters/PublisherScoreSubUpdater');
 const TradeSubUpdater = require('./SubUpdaters/TradeSubUpdater');
+const PublicBidSubUpdater = require('./SubUpdaters/PublicBidSubUpdater.js');
 
 exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
     const yearToCheck = new Date().getFullYear();
@@ -40,6 +41,7 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
 
         await PublisherScoreSubUpdater.scoreUpdate(leagueYear, channelToSend, sendMessages);
         await TradeSubUpdater.tradeUpdate(leagueYear, lastCheckDate, channelToSend, sendMessages);
+        await PublicBidSubUpdater.publicBidUpdate(leagueYear, lastCheckDate, channelToSend);
 
         await FCDataLayer.updateLastCheckTime({
             checkType: CheckTypes.LEAGUE_YEAR_UPDATER_CHECK,
