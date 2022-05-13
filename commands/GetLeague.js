@@ -7,7 +7,6 @@ const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
 const ranked = require('ranked');
-const DateCleaner = require('../api/DateCleaner.js');
 
 class GetLeague extends Chariot.Command {
     constructor() {
