@@ -77,7 +77,6 @@ class GetLeague extends Chariot.Command {
         const header = `${leagueYearData.league.leagueName} (${leagueYearData.leagueYear})`;
 
         message += '\n\n' + this.getGameNews(leagueYearData.gameNews);
-        message += `\n[Visit League Page](${leagueLink}})`;
 
         const messageToSend = new MessageWithEmbed(
             message,
@@ -86,7 +85,8 @@ class GetLeague extends Chariot.Command {
             `Requested by ${msg.author.username}`,
             new MessageReplyDetails(msg.id, true),
             this.MessageColors.RegularColor,
-            null
+            null,
+            leagueLink
         );
         this.MessageSender.sendMessage(
             messageToSend.buildMessage(),
