@@ -40,6 +40,11 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
 
         await scoreUpdate(leagueYear, channelToSend);
         await tradeUpdate(leagueYear, lastCheckDate, channelToSend);
+
+        await FCDataLayer.updateLastCheckTime({
+            checkType: CheckTypes.LEAGUE_YEAR_UPDATER_CHECK,
+            checkDate: currentDateToSave,
+        });
     }
     console.log('Processed ALL leagues.');
 };
@@ -155,6 +160,9 @@ async function tradeUpdate(leagueYear, lastCheckDate, channelToSend) {
     );
 
     for (const proposedTrade of tradesProposedSinceLastCheck) {
+        let header = `**${proposedTrade.proposerPublisherName}** has proposed a trade with **${proposedTrade.counterPartyPublisherName}**`;
+        const message = getTradeMessage(proposedTrade, header);
+        updatesToAnnounce.push(message);
     }
 
     const tradesAcceptedSinceLastCheck = activeTrades.filter(
@@ -162,9 +170,46 @@ async function tradeUpdate(leagueYear, lastCheckDate, channelToSend) {
     );
 
     for (const acceptedTrade of tradesAcceptedSinceLastCheck) {
+        let header = `**${acceptedTrade.counterPartyPublisherName}** has accepted a trade with **${acceptedTrade.proposerPublisherName}**`;
+        const message = getTradeMessage(acceptedTrade, header);
+        updatesToAnnounce.push(message);
     }
 
     sendMessages(updatesToAnnounce, '**Trade Updates!**', channelToSend);
+}
+
+function getTradeMessage(trade, header) {
+    let message = header + '\n';
+    message += `**${trade.proposerPublisherName}** will recieve: `;
+    const counterPartySendGames = trade.counterPartySendGames
+        .map((x) => `**${x.masterGameYear.gameName}**`)
+        .join(' and ');
+    if (counterPartySendGames) {
+        message += counterPartySendGames;
+    }
+
+    if (trade.counterPartyBudgetSendAmount) {
+        if (counterPartySendGames) {
+            message += ' and ';
+        }
+        message += '**$' + trade.counterPartyBudgetSendAmount + ' of budget**';
+    }
+
+    message += `\n**${trade.counterPartyPublisherName}** will receive: `;
+    const proposerSendGames = trade.proposerSendGames.map((x) => `**${x.masterGameYear.gameName}**`).join(' and ');
+    if (proposerSendGames) {
+        message += proposerSendGames;
+    }
+
+    if (trade.proposerBudgetSendAmount) {
+        if (proposerSendGames) {
+            message += ' and ';
+        }
+        message += '**$' + trade.proposerBudgetSendAmount + '** of budget';
+    }
+
+    message += `\nMessage from ${trade.proposerPublisherName}: **${trade.message}**`;
+    return message;
 }
 
 function sendMessages(updatesToAnnounce, header, channelToSend) {
