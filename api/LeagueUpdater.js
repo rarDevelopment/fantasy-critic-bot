@@ -51,7 +51,8 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (
         );
         let updatesToAnnounce = filteredLeagueActions.map(
             (l) =>
-                `**${l.publisherName}** ${l.description
+                `**${l.publisherName}** ${
+                    l.description
                 } (at ${l.date.toLocaleString(DateTime.DATETIME_FULL)})`
         );
         const messageSender = new MessageSender();
@@ -63,7 +64,7 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (
             console.log(
                 `Could not find guild with id ${leagueChannel.guildId}`
             );
-            return;
+            continue;
         }
         const channelToSend = guildToSend.channels.find(
             (c) => c.id === leagueChannel.channelId
@@ -72,7 +73,7 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (
             console.log(
                 `Could not find channel with id ${leagueChannel.channelId}`
             );
-            return;
+            continue;
         }
 
         if (updatesToAnnounce.length > 0) {

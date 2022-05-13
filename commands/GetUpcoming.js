@@ -70,7 +70,8 @@ class GetUpcoming extends Chariot.Command {
         const message = sorted
             .map(
                 (g) =>
-                    `**${DateCleaner.clean(g.estimatedReleaseDate)}** - ${g.gameName
+                    `**${DateCleaner.clean(g.estimatedReleaseDate)}** - ${
+                        g.gameName
                     } (${g.publisherName})`
             )
             .join('\n');
