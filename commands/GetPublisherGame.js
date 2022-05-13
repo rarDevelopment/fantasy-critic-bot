@@ -26,10 +26,7 @@ class GetLeague extends Chariot.Command {
     }
 
     async execute(msg, args, chariot) {
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(
-            msg.channel.id,
-            msg.guildID
-        );
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
         if (!leagueChannel) {
             this.MessageSender.sendErrorMessage(
                 'No league configuration found for this channel.',
@@ -56,8 +53,7 @@ class GetLeague extends Chariot.Command {
 
         let gameNameToSearch = args.join(' ');
         gameNameToSearch = gameNameToSearch.trim().toLowerCase();
-        gameNameToSearch =
-            this.stripAccentedCharactersAndStuff(gameNameToSearch);
+        gameNameToSearch = this.stripAccentedCharactersAndStuff(gameNameToSearch);
 
         if (gameNameToSearch.length <= 2) {
             this.MessageSender.sendErrorMessage(
@@ -73,10 +69,7 @@ class GetLeague extends Chariot.Command {
 
         const leagueId = leagueChannel.leagueId;
         const year = new Date().getFullYear();
-        const leagueYearData = await FantasyCriticApi.getLeagueYear(
-            leagueId,
-            year
-        );
+        const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, year);
 
         if (!leagueYearData) {
             this.MessageSender.sendErrorMessage(
@@ -90,48 +83,40 @@ class GetLeague extends Chariot.Command {
             return;
         }
 
-        const publishersWithFilteredGames = leagueYearData.publishers.map(
-            (p) => {
-                return {
-                    publisherName: p.publisherName,
-                    playerName: p.playerName,
-                    games: p.games
-                        .filter((g) =>
-                            this.stripAccentedCharactersAndStuff(
-                                g.gameName.toLowerCase()
-                            ).includes(gameNameToSearch)
-                        )
-                        .map((g) => {
-                            return {
-                                gameName: g.gameName,
-                                estimatedReleaseDate: g.estimatedReleaseDate,
-                                releaseDate: g.releaseDate,
-                                fantasyPoints: g.fantasyPoints,
-                                counterPick: g.counterPick,
-                                isReleased: g.masterGame.isReleased,
-                                masterGameId: g.masterGame.masterGameID,
-                            };
-                        }),
-                };
-            }
-        );
+        const publishersWithFilteredGames = leagueYearData.publishers.map((p) => {
+            return {
+                publisherName: p.publisherName,
+                playerName: p.playerName,
+                games: p.games
+                    .filter((g) =>
+                        this.stripAccentedCharactersAndStuff(g.gameName.toLowerCase()).includes(gameNameToSearch)
+                    )
+                    .map((g) => {
+                        return {
+                            gameName: g.gameName,
+                            estimatedReleaseDate: g.estimatedReleaseDate,
+                            releaseDate: g.releaseDate,
+                            fantasyPoints: g.fantasyPoints,
+                            counterPick: g.counterPick,
+                            isReleased: g.masterGame.isReleased,
+                            masterGameId: g.masterGame.masterGameID,
+                        };
+                    }),
+            };
+        });
 
-        const publishersWithMatchingGames = publishersWithFilteredGames.filter(
-            (p) => p.games.length > 0
-        );
+        const publishersWithMatchingGames = publishersWithFilteredGames.filter((p) => p.games.length > 0);
 
         const matchingPickedGames = publishersWithMatchingGames.map((p) =>
             this.buildMessageFromGamesArray(p.games, p, false)
         );
 
-        const matchingCounterPickedGames = publishersWithFilteredGames.map(
-            (p) => this.buildMessageFromGamesArray(p.games, p, true)
+        const matchingCounterPickedGames = publishersWithFilteredGames.map((p) =>
+            this.buildMessageFromGamesArray(p.games, p, true)
         );
 
         const picksMessage =
-            matchingPickedGames.length >= 0
-                ? matchingPickedGames.map((m) => m.join('\n')).join('\n')
-                : '';
+            matchingPickedGames.length >= 0 ? matchingPickedGames.map((m) => m.join('\n')).join('\n') : '';
         const counterPicksMessage =
             matchingCounterPickedGames.length >= 0
                 ? matchingCounterPickedGames.map((m) => m.join('\n')).join('\n')
@@ -140,14 +125,10 @@ class GetLeague extends Chariot.Command {
         let embedFieldsToAdd = [];
 
         if (picksMessage.trim() !== '') {
-            embedFieldsToAdd.push(
-                new EmbedField('Picks Found', picksMessage, false)
-            );
+            embedFieldsToAdd.push(new EmbedField('Picks Found', picksMessage, false));
         }
         if (counterPicksMessage.trim() !== '') {
-            embedFieldsToAdd.push(
-                new EmbedField('Counterpicks Found', counterPicksMessage, false)
-            );
+            embedFieldsToAdd.push(new EmbedField('Counterpicks Found', counterPicksMessage, false));
         }
 
         const messageToSend = new MessageWithEmbed(
@@ -160,11 +141,7 @@ class GetLeague extends Chariot.Command {
             null
         );
 
-        this.MessageSender.sendMessage(
-            messageToSend.buildMessage(),
-            msg.channel,
-            null
-        );
+        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
     }
 
     buildMessageFromGamesArray(games, publisher, isCounterPick) {
@@ -173,9 +150,7 @@ class GetLeague extends Chariot.Command {
             .map((g) => {
                 const scoreOrDate = `${
                     g.isReleased
-                        ? (g.fantasyPoints !== null
-                              ? ScoreRounder.round(g.fantasyPoints, 1)
-                              : '0') + ' points'
+                        ? (g.fantasyPoints !== null ? ScoreRounder.round(g.fantasyPoints, 1) : '0') + ' points'
                         : g.estimatedReleaseDate
                 }`;
                 const gameName = g.masterGameId

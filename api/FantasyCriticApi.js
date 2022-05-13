@@ -20,9 +20,7 @@ exports.getLeague = async function (leagueId) {
 };
 
 exports.getLeagueYear = async function (leagueId, year) {
-    const response = await fetch(
-        `${baseUrl}league/getLeagueYear/?leagueID=${leagueId}&year=${year}`
-    );
+    const response = await fetch(`${baseUrl}league/getLeagueYear/?leagueID=${leagueId}&year=${year}`);
     if (response.status === 200) {
         const data = await response.json();
         if (!data) {
@@ -41,9 +39,7 @@ exports.getLeagueYear = async function (leagueId, year) {
 };
 
 exports.getLeagueActions = async function (leagueId, year) {
-    const response = await fetch(
-        `${baseUrl}league/getLeagueActions/?leagueID=${leagueId}&year=${year}`
-    );
+    const response = await fetch(`${baseUrl}league/getLeagueActions/?leagueID=${leagueId}&year=${year}`);
     if (response.status === 200) {
         const data = await response.json();
         if (!data) {
@@ -55,9 +51,7 @@ exports.getLeagueActions = async function (leagueId, year) {
 };
 
 exports.getLeagueUpcoming = async function (leagueId, year) {
-    const response = await fetch(
-        `${baseUrl}league/LeagueUpcomingGames/?leagueID=${leagueId}&year=${year}`
-    );
+    const response = await fetch(`${baseUrl}league/LeagueUpcomingGames/?leagueID=${leagueId}&year=${year}`);
     if (response.status === 200) {
         const data = await response.json();
         if (!data) {

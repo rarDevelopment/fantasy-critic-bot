@@ -23,14 +23,10 @@ exports.listenOnSocket = function (guildsToProcess) {
             try {
                 const payload = JSON.parse(msg);
                 if (payload.checkToDo) {
-                    const leagueChannels =
-                        await ConfigDataLayer.getLeagueChannels();
+                    const leagueChannels = await ConfigDataLayer.getLeagueChannels();
                     switch (payload.checkToDo) {
                         case CheckTypes.GAME_UPDATER_CHECK:
-                            await GameUpdater.sendGameUpdatesToLeagueChannels(
-                                guildsToProcess,
-                                leagueChannels
-                            );
+                            await GameUpdater.sendGameUpdatesToLeagueChannels(guildsToProcess, leagueChannels);
                             break;
                         case CheckTypes.LEAGUE_YEAR_UPDATER_CHECK:
                             await ScoreUpdater.sendPublisherScoreUpdatesToLeagueChannels(
@@ -39,16 +35,10 @@ exports.listenOnSocket = function (guildsToProcess) {
                             );
                             break;
                         case CheckTypes.LEAGUE_ACTION_CHECK:
-                            await LeagueUpdater.sendLeagueUpdatesToLeagueChannels(
-                                guildsToProcess,
-                                leagueChannels
-                            );
+                            await LeagueUpdater.sendLeagueUpdatesToLeagueChannels(guildsToProcess, leagueChannels);
                             break;
                         default:
-                            console.log(
-                                'Received invalid check option',
-                                payload.checkToDo
-                            );
+                            console.log('Received invalid check option', payload.checkToDo);
                     }
                 } else {
                     console.log('Received invalid payload', payload);

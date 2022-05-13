@@ -25,10 +25,7 @@ class GetLeague extends Chariot.Command {
     }
 
     async execute(msg, args, chariot) {
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(
-            msg.channel.id,
-            msg.guildID
-        );
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
         if (!leagueChannel) {
             this.MessageSender.sendErrorMessage(
                 'No league configuration found for this channel.',
@@ -43,10 +40,7 @@ class GetLeague extends Chariot.Command {
 
         const leagueId = leagueChannel.leagueId;
         const year = new Date().getFullYear();
-        const leagueYearData = await FantasyCriticApi.getLeagueYear(
-            leagueId,
-            year
-        );
+        const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, year);
 
         if (!leagueYearData) {
             this.MessageSender.sendErrorMessage(
@@ -60,10 +54,7 @@ class GetLeague extends Chariot.Command {
             return;
         }
 
-        const rankedPublishers = ranked.ranking(
-            leagueYearData.players,
-            (pub) => pub.totalFantasyPoints
-        );
+        const rankedPublishers = ranked.ranking(leagueYearData.players, (pub) => pub.totalFantasyPoints);
 
         let message = rankedPublishers
             .sort((p1, p2) => {
@@ -86,11 +77,7 @@ class GetLeague extends Chariot.Command {
             null,
             leagueLink
         );
-        this.MessageSender.sendMessage(
-            messageToSend.buildMessage(),
-            msg.channel,
-            null
-        );
+        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
     }
 
     getPublisherLine(rank, player, publisher) {
@@ -105,14 +92,8 @@ class GetLeague extends Chariot.Command {
         let publisherLine = `**${rank}.** `;
         publisherLine += `${publisherIcon}**${publisher.publisherName}** `;
         publisherLine += `(${publisher.playerName})${crownEmoji} \n`;
-        publisherLine += `> **${ScoreRounder.round(
-            publisher.totalFantasyPoints,
-            1
-        )} points** `;
-        publisherLine += `*(Projected: ${ScoreRounder.round(
-            publisher.totalProjectedPoints,
-            1
-        )})*\n`;
+        publisherLine += `> **${ScoreRounder.round(publisher.totalFantasyPoints, 1)} points** `;
+        publisherLine += `*(Projected: ${ScoreRounder.round(publisher.totalProjectedPoints, 1)})*\n`;
         publisherLine += `> ${publisher.gamesReleased}/${
             publisher.gamesWillRelease + publisher.gamesReleased
         } games released`;

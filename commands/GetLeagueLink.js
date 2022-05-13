@@ -20,10 +20,7 @@ class GetLeagueLink extends Chariot.Command {
     }
 
     async execute(msg, args, chariot) {
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(
-            msg.channel.id,
-            msg.guildID
-        );
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
         if (!leagueChannel) {
             this.MessageSender.sendErrorMessage(
                 'No league configuration found for this channel.',
@@ -41,15 +38,8 @@ class GetLeagueLink extends Chariot.Command {
 
         const leagueUrl = `https://www.fantasycritic.games/league/${leagueId}/${year}`;
 
-        const messageToSend = new Message(
-            leagueUrl,
-            new MessageReplyDetails(msg.id, true)
-        );
-        this.MessageSender.sendMessage(
-            messageToSend.buildMessage(),
-            msg.channel,
-            null
-        );
+        const messageToSend = new Message(leagueUrl, new MessageReplyDetails(msg.id, true));
+        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
     }
 }
 module.exports = new GetLeagueLink();

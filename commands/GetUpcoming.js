@@ -25,10 +25,7 @@ class GetUpcoming extends Chariot.Command {
     }
 
     async execute(msg, args, chariot) {
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(
-            msg.channel.id,
-            msg.guildID
-        );
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
         if (!leagueChannel) {
             this.MessageSender.sendErrorMessage(
                 'No league configuration found for this channel.',
@@ -43,10 +40,7 @@ class GetUpcoming extends Chariot.Command {
 
         const leagueId = leagueChannel.leagueId;
         const year = new Date().getFullYear();
-        const upcomingGamesData = await FantasyCriticApi.getLeagueUpcoming(
-            leagueId,
-            year
-        );
+        const upcomingGamesData = await FantasyCriticApi.getLeagueUpcoming(leagueId, year);
 
         if (!upcomingGamesData) {
             this.MessageSender.sendErrorMessage(
@@ -60,20 +54,13 @@ class GetUpcoming extends Chariot.Command {
             return;
         }
 
-        const willReleaseUpcomingGamesData = upcomingGamesData.filter(
-            (g) => !g.masterGame.isReleased
-        );
+        const willReleaseUpcomingGamesData = upcomingGamesData.filter((g) => !g.masterGame.isReleased);
 
         const sorted = willReleaseUpcomingGamesData.sort((g1, g2) => {
             return g1.maximumReleaseDate > g2.maximumReleaseDate ? 1 : -1; //descending
         });
         const message = sorted
-            .map(
-                (g) =>
-                    `**${DateCleaner.clean(g.estimatedReleaseDate)}** - ${
-                        g.gameName
-                    } (${g.publisherName})`
-            )
+            .map((g) => `**${DateCleaner.clean(g.estimatedReleaseDate)}** - ${g.gameName} (${g.publisherName})`)
             .join('\n');
 
         const messageToSend = new MessageWithEmbed(
@@ -85,11 +72,7 @@ class GetUpcoming extends Chariot.Command {
             this.MessageColors.RegularColor,
             null
         );
-        this.MessageSender.sendMessage(
-            messageToSend.buildMessage(),
-            msg.channel,
-            null
-        );
+        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
     }
 }
 module.exports = new GetUpcoming();

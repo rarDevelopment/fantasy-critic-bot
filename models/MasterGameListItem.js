@@ -16,9 +16,5 @@ const masterGameListItemSchema = new mongoose.Schema(
 );
 
 module.exports = {
-    MasterGameListItem: mongoose.model(
-        'mastergamelistitem',
-        masterGameListItemSchema,
-        'mastergamelistitem'
-    ),
+    MasterGameListItem: mongoose.model('mastergamelistitem', masterGameListItemSchema, 'mastergamelistitem'),
 };
