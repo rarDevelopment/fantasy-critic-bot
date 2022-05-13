@@ -21,118 +21,6 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (
             leagueChannel.leagueId,
             yearToCheck
         );
-        const publishersApiData = leagueYear.publishers.map((publisher) => {
-            return {
-                publisherID: publisher.publisherID,
-                leagueID: publisher.leagueID,
-                publisherName: publisher.publisherName,
-                playerName: publisher.playerName,
-                totalFantasyPoints: publisher.totalFantasyPoints,
-            };
-        });
-
-        const publisherScoresCache = await FCDataLayer.getPublisherScores(
-            leagueChannel.leagueId
-        );
-
-        if (!publisherScoresCache || publisherScoresCache.length === 0) {
-            await FCDataLayer.initPublisherScores(publishersApiData);
-            continue;
-        }
-
-        const rankedCache = ranked.ranking(
-            publisherScoresCache,
-            (pubScore) => pubScore.totalFantasyPoints
-        );
-        const rankedApi = ranked.ranking(
-            publishersApiData,
-            (pubScore) => pubScore.totalFantasyPoints
-        );
-
-        let publisherScoresToUpdate = [];
-        let updatesToAnnounce = [];
-
-        rankedApi.forEach((rankedPublisher) => {
-            const publisherScoreToCheck = rankedPublisher.item;
-            const publisherInCache = publisherScoresCache.find(
-                (p) => p.publisherID === publisherScoreToCheck.publisherID
-            );
-
-            const nameToShow = `${publisherScoreToCheck.publisherName} (Player: ${publisherScoreToCheck.playerName})`;
-            if (!publisherInCache) {
-                publisherScoresToUpdate.push(publisherScoreToCheck);
-                updatesToAnnounce.push(
-                    `**${nameToShow}** now has a score of **${ScoreRounder.round(
-                        publisherScoreToCheck.totalFantasyPoints,
-                        1
-                    )}** and is now in **${formatRankNumber(
-                        rankedPublisher.rank
-                    )}** place.`
-                );
-            } else {
-                if (
-                    publisherScoreToCheck.totalFantasyPoints !==
-                    publisherInCache.totalFantasyPoints
-                ) {
-                    publisherScoresToUpdate.push(publisherScoreToCheck);
-                    if (!publisherInCache.totalFantasyPoints) {
-                        updatesToAnnounce.push(
-                            `**${nameToShow}** now has a score of **${ScoreRounder.round(
-                                publisherScoreToCheck.totalFantasyPoints,
-                                1
-                            )}** and is now in **${formatRankNumber(
-                                rankedPublisher.rank
-                            )}** place.`
-                        );
-                    } else {
-                        const roundedCacheScore = ScoreRounder.round(
-                            publisherInCache.totalFantasyPoints,
-                            1
-                        );
-                        const roundedApiScore = ScoreRounder.round(
-                            publisherScoreToCheck.totalFantasyPoints,
-                            1
-                        );
-                        const scoreDiff = roundedCacheScore - roundedApiScore;
-                        if (scoreDiff !== 0 && Math.abs(scoreDiff) >= 1) {
-                            const direction = scoreDiff < 0 ? 'UP' : 'DOWN';
-                            let updateMessage = `**${nameToShow}**'s score has gone **${direction}** from **${roundedCacheScore}** to **${roundedApiScore}**`;
-                            if (
-                                didRankChange(
-                                    publisherScoreToCheck.publisherID,
-                                    rankedCache,
-                                    rankedApi
-                                )
-                            ) {
-                                updateMessage += ` and is now in **${formatRankNumber(
-                                    rankedPublisher.rank
-                                )}** place.`;
-                            }
-                            updatesToAnnounce.push(updateMessage);
-                        }
-                    }
-                }
-                if (
-                    publisherScoreToCheck.publisherName !==
-                    publisherInCache.publisherName
-                ) {
-                    publisherScoresToUpdate.push(publisherScoreToCheck);
-                    updatesToAnnounce.push(
-                        `Publisher **${publisherInCache.publisherName}** is now known as **${publisherScoreToCheck.publisherName}**`
-                    );
-                }
-                if (
-                    publisherScoreToCheck.playerName !==
-                    publisherInCache.playerName
-                ) {
-                    publisherScoresToUpdate.push(publisherScoreToCheck);
-                }
-            }
-        });
-
-        await FCDataLayer.updatePublisherScores(publisherScoresToUpdate);
-
-        const messageSender = new MessageSender();
 
         const guildToSend = guildsToSend.find(
             (g) => g.id === leagueChannel.guildId
@@ -141,7 +29,7 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (
             console.log(
                 `Could not find guild with id ${leagueChannel.guildId}`
             );
-            return;
+            continue;
         }
         const channelToSend = guildToSend.channels.find(
             (c) => c.id === leagueChannel.channelId
@@ -150,40 +38,156 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (
             console.log(
                 `Could not find channel with id ${leagueChannel.channelId}`
             );
-            return;
+            continue;
         }
 
-        if (updatesToAnnounce.length > 0) {
-            const messageArrayJoiner = new MessageArrayJoiner();
-            const messageArray =
-                messageArrayJoiner.buildMessageArrayFromStringArray(
-                    updatesToAnnounce,
-                    resources.maxMessageLength,
-                    `**Publisher Updates!**`
-                );
+        await scoreUpdate(leagueYear, channelToSend);
+    }
+    console.log('Processed ALL leagues.');
+};
 
-            if (messageArray.length > 10) {
-                console.log(
-                    'Attempting to send more than 10 messages at once',
-                    messageArray
+async function scoreUpdate(leagueYear, channelToSend) {
+    const publishersApiData = leagueYear.publishers.map((publisher) => {
+        return {
+            publisherID: publisher.publisherID,
+            leagueID: publisher.leagueID,
+            publisherName: publisher.publisherName,
+            playerName: publisher.playerName,
+            totalFantasyPoints: publisher.totalFantasyPoints,
+        };
+    });
+
+    const publisherScoresCache = await FCDataLayer.getPublisherScores(
+        leagueYear.leagueId
+    );
+
+    if (!publisherScoresCache || publisherScoresCache.length === 0) {
+        await FCDataLayer.initPublisherScores(publishersApiData);
+        return;
+    }
+
+    const rankedCache = ranked.ranking(
+        publisherScoresCache,
+        (pubScore) => pubScore.totalFantasyPoints
+    );
+    const rankedApi = ranked.ranking(
+        publishersApiData,
+        (pubScore) => pubScore.totalFantasyPoints
+    );
+
+    let publisherScoresToUpdate = [];
+    let updatesToAnnounce = [];
+
+    rankedApi.forEach((rankedPublisher) => {
+        const publisherScoreToCheck = rankedPublisher.item;
+        const publisherInCache = publisherScoresCache.find(
+            (p) => p.publisherID === publisherScoreToCheck.publisherID
+        );
+
+        const nameToShow = `${publisherScoreToCheck.publisherName} (Player: ${publisherScoreToCheck.playerName})`;
+        if (!publisherInCache) {
+            publisherScoresToUpdate.push(publisherScoreToCheck);
+            updatesToAnnounce.push(
+                `**${nameToShow}** now has a score of **${ScoreRounder.round(
+                    publisherScoreToCheck.totalFantasyPoints,
+                    1
+                )}** and is now in **${formatRankNumber(
+                    rankedPublisher.rank
+                )}** place.`
+            );
+        } else {
+            if (
+                publisherScoreToCheck.totalFantasyPoints !==
+                publisherInCache.totalFantasyPoints
+            ) {
+                publisherScoresToUpdate.push(publisherScoreToCheck);
+                if (!publisherInCache.totalFantasyPoints) {
+                    updatesToAnnounce.push(
+                        `**${nameToShow}** now has a score of **${ScoreRounder.round(
+                            publisherScoreToCheck.totalFantasyPoints,
+                            1
+                        )}** and is now in **${formatRankNumber(
+                            rankedPublisher.rank
+                        )}** place.`
+                    );
+                } else {
+                    const roundedCacheScore = ScoreRounder.round(
+                        publisherInCache.totalFantasyPoints,
+                        1
+                    );
+                    const roundedApiScore = ScoreRounder.round(
+                        publisherScoreToCheck.totalFantasyPoints,
+                        1
+                    );
+                    const scoreDiff = roundedCacheScore - roundedApiScore;
+                    if (scoreDiff !== 0 && Math.abs(scoreDiff) >= 1) {
+                        const direction = scoreDiff < 0 ? 'UP' : 'DOWN';
+                        let updateMessage = `**${nameToShow}**'s score has gone **${direction}** from **${roundedCacheScore}** to **${roundedApiScore}**`;
+                        if (
+                            didRankChange(
+                                publisherScoreToCheck.publisherID,
+                                rankedCache,
+                                rankedApi
+                            )
+                        ) {
+                            updateMessage += ` and is now in **${formatRankNumber(
+                                rankedPublisher.rank
+                            )}** place.`;
+                        }
+                        updatesToAnnounce.push(updateMessage);
+                    }
+                }
+            }
+            if (
+                publisherScoreToCheck.publisherName !==
+                publisherInCache.publisherName
+            ) {
+                publisherScoresToUpdate.push(publisherScoreToCheck);
+                updatesToAnnounce.push(
+                    `Publisher **${publisherInCache.publisherName}** is now known as **${publisherScoreToCheck.publisherName}**`
                 );
             }
-
-            messageArray.forEach((message) => {
-                const messageToSend = new Message(message, null);
-                messageSender.sendMessage(
-                    messageToSend.buildMessage(),
-                    channelToSend,
-                    null
-                );
-            });
-            console.log(`Sent updates to channel ${channelToSend.id}`);
-        } else {
-            console.log('No updates to announce.', new Date());
+            if (
+                publisherScoreToCheck.playerName !== publisherInCache.playerName
+            ) {
+                publisherScoresToUpdate.push(publisherScoreToCheck);
+            }
         }
+    });
+
+    await FCDataLayer.updatePublisherScores(publisherScoresToUpdate);
+
+    const messageSender = new MessageSender();
+
+    if (updatesToAnnounce.length > 0) {
+        const messageArrayJoiner = new MessageArrayJoiner();
+        const messageArray =
+            messageArrayJoiner.buildMessageArrayFromStringArray(
+                updatesToAnnounce,
+                resources.maxMessageLength,
+                `**Publisher Updates!**`
+            );
+
+        if (messageArray.length > 10) {
+            console.log(
+                'Attempting to send more than 10 messages at once',
+                messageArray
+            );
+        }
+
+        messageArray.forEach((message) => {
+            const messageToSend = new Message(message, null);
+            messageSender.sendMessage(
+                messageToSend.buildMessage(),
+                channelToSend,
+                null
+            );
+        });
+        console.log(`Sent updates to channel ${channelToSend.id}`);
+    } else {
+        console.log('No updates to announce.', new Date());
     }
-    console.log('Processed ALL publishers.');
-};
+}
 
 function didRankChange(publisherId, rankCache, rankApi) {
     const rankBefore = rankCache.find(
