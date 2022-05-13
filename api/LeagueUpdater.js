@@ -1,11 +1,11 @@
-const Message = require('discord-lib/Message');
-const MessageSender = require('discord-lib/MessageSender.js');
+const Message = require('discord-helper-lib/Message');
+const MessageSender = require('discord-helper-lib/MessageSender.js');
 const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const FCDataLayer = require('../api/FCDataLayer.js');
 const CheckTypes = require('../api/CheckTypes.js');
 const { DateTime } = require('luxon');
 const resources = require('../settings/resources.json');
-const MessageArrayJoiner = require('discord-lib/MessageArrayJoiner.js');
+const MessageArrayJoiner = require('discord-helper-lib/MessageArrayJoiner.js');
 
 exports.sendLeagueUpdatesToLeagueChannels = async function (
     guilds,
@@ -51,8 +51,7 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (
         );
         let updatesToAnnounce = filteredLeagueActions.map(
             (l) =>
-                `**${l.publisherName}** ${
-                    l.description
+                `**${l.publisherName}** ${l.description
                 } (at ${l.date.toLocaleString(DateTime.DATETIME_FULL)})`
         );
         const messageSender = new MessageSender();

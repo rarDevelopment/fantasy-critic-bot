@@ -1,8 +1,8 @@
 const Chariot = require('chariot.js');
-const MessageColors = require('discord-lib/MessageColors');
-const MessageReplyDetails = require('discord-lib/MessageReplyDetails.js');
-const MessageSender = require('discord-lib/MessageSender.js');
-const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
+const MessageColors = require('discord-helper-lib/MessageColors');
+const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
+const MessageSender = require('discord-helper-lib/MessageSender.js');
+const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed.js');
 const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const DateCleaner = require('../api/DateCleaner.js');
@@ -70,8 +70,7 @@ class GetUpcoming extends Chariot.Command {
         const message = sorted
             .map(
                 (g) =>
-                    `**${DateCleaner.clean(g.estimatedReleaseDate)}** - ${
-                        g.gameName
+                    `**${DateCleaner.clean(g.estimatedReleaseDate)}** - ${g.gameName
                     } (${g.publisherName})`
             )
             .join('\n');

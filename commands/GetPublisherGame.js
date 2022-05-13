@@ -1,12 +1,12 @@
 const Chariot = require('chariot.js');
-const MessageColors = require('discord-lib/MessageColors');
-const MessageReplyDetails = require('discord-lib/MessageReplyDetails.js');
-const MessageSender = require('discord-lib/MessageSender.js');
-const MessageWithEmbed = require('discord-lib/MessageWithEmbed.js');
+const MessageColors = require('discord-helper-lib/MessageColors');
+const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
+const MessageSender = require('discord-helper-lib/MessageSender.js');
+const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed.js');
 const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
-const EmbedField = require('discord-lib/EmbedField');
+const EmbedField = require('discord-helper-lib/EmbedField');
 const resources = require('../settings/resources.json');
 
 class GetLeague extends Chariot.Command {
@@ -171,13 +171,12 @@ class GetLeague extends Chariot.Command {
         return games
             .filter((g) => g.counterPick === isCounterPick)
             .map((g) => {
-                const scoreOrDate = `${
-                    g.isReleased
+                const scoreOrDate = `${g.isReleased
                         ? (g.fantasyPoints !== null
-                              ? ScoreRounder.round(g.fantasyPoints, 1)
-                              : '0') + ' points'
+                            ? ScoreRounder.round(g.fantasyPoints, 1)
+                            : '0') + ' points'
                         : g.estimatedReleaseDate
-                }`;
+                    }`;
                 const gameName = g.masterGameId
                     ? `[${g.gameName}](${resources.masterGameUrl}${g.masterGameId})`
                     : g.gameName;

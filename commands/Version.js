@@ -1,9 +1,9 @@
 const Chariot = require('chariot.js');
 const packageJson = require('../package.json');
-const MessageWithEmbed = require('discord-lib/MessageWithEmbed');
-const MessageReplyDetails = require('discord-lib/MessageReplyDetails');
-const MessageSender = require('discord-lib/MessageSender');
-const MessageColors = require('discord-lib/MessageColors');
+const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed');
+const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails');
+const MessageSender = require('discord-helper-lib/MessageSender');
+const MessageColors = require('discord-helper-lib/MessageColors');
 
 class Version extends Chariot.Command {
     BotDisplayName = 'FC Interim Bot';
