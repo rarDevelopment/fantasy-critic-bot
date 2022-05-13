@@ -30,7 +30,7 @@ class TradeSubUpdater {
 
     getTradeMessage(trade, header, includeMessage) {
         let message = header + '\n';
-        message += `**${trade.proposerPublisherName}** will recieve: `;
+        message += `**${trade.proposerPublisherName}** will receive: `;
         const counterPartySendGames = trade.counterPartySendGames
             .map((x) => `**${x.masterGameYear.gameName}**`)
             .join(' and ');
