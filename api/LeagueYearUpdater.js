@@ -6,6 +6,8 @@ const ScoreRounder = require('./ScoreRounder.js');
 const resources = require('../settings/resources.json');
 const MessageArrayJoiner = require('discord-helper-lib/MessageArrayJoiner.js');
 const ranked = require('ranked');
+const CheckTypes = require('../api/CheckTypes.js');
+const { DateTime } = require('luxon');
 
 exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
     const yearToCheck = new Date().getFullYear();
@@ -25,7 +27,19 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
             continue;
         }
 
+        const currentDateToSave = DateTime.now().toISO();
+        const lastCheckTime = await FCDataLayer.getLastCheckTime(CheckTypes.LEAGUE_YEAR_UPDATER_CHECK);
+        if (!lastCheckTime) {
+            console.log('creating');
+            await FCDataLayer.updateLastCheckTime({
+                checkType: CheckTypes.LEAGUE_YEAR_UPDATER_CHECK,
+                checkDate: currentDateToSave,
+            });
+        }
+        const lastCheckDate = DateTime.fromISO(lastCheckTime ? lastCheckTime.checkDate : currentDateToSave);
+
         await scoreUpdate(leagueYear, channelToSend);
+        await tradeUpdate(leagueYear, lastCheckDate, channelToSend);
     }
     console.log('Processed ALL leagues.');
 };
@@ -105,28 +119,7 @@ async function scoreUpdate(leagueYear, channelToSend) {
 
     await FCDataLayer.updatePublisherScores(publisherScoresToUpdate);
 
-    const messageSender = new MessageSender();
-
-    if (updatesToAnnounce.length > 0) {
-        const messageArrayJoiner = new MessageArrayJoiner();
-        const messageArray = messageArrayJoiner.buildMessageArrayFromStringArray(
-            updatesToAnnounce,
-            resources.maxMessageLength,
-            `**Publisher Updates!**`
-        );
-
-        if (messageArray.length > 10) {
-            console.log('Attempting to send more than 10 messages at once', messageArray);
-        }
-
-        messageArray.forEach((message) => {
-            const messageToSend = new Message(message, null);
-            messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
-        });
-        console.log(`Sent updates to channel ${channelToSend.id}`);
-    } else {
-        console.log('No updates to announce.', new Date());
-    }
+    sendMessages(updatesToAnnounce, '**Publisher Updates!**', channelToSend);
 }
 
 function didRankChange(publisherId, rankCache, rankApi) {
@@ -151,4 +144,50 @@ function formatRankNumber(rankNumber) {
         }
     }
     return `${numberToFormat}${suffix}`;
+}
+
+async function tradeUpdate(leagueYear, lastCheckDate, channelToSend) {
+    let updatesToAnnounce = [];
+
+    const activeTrades = leagueYear.activeTrades;
+    const tradesProposedSinceLastCheck = activeTrades.filter(
+        (trade) => DateTime.fromISO(trade.proposedTimestamp) > lastCheckDate
+    );
+
+    for (const proposedTrade of tradesProposedSinceLastCheck) {
+    }
+
+    const tradesAcceptedSinceLastCheck = activeTrades.filter(
+        (trade) => trade.acceptedTimestamp && DateTime.fromISO(trade.acceptedTimestamp) > lastCheckDate
+    );
+
+    for (const acceptedTrade of tradesAcceptedSinceLastCheck) {
+    }
+
+    sendMessages(updatesToAnnounce, '**Trade Updates!**', channelToSend);
+}
+
+function sendMessages(updatesToAnnounce, header, channelToSend) {
+    const messageSender = new MessageSender();
+
+    if (updatesToAnnounce.length > 0) {
+        const messageArrayJoiner = new MessageArrayJoiner();
+        const messageArray = messageArrayJoiner.buildMessageArrayFromStringArray(
+            updatesToAnnounce,
+            resources.maxMessageLength,
+            header
+        );
+
+        if (messageArray.length > 10) {
+            console.log('Attempting to send more than 10 messages at once', messageArray);
+        }
+
+        messageArray.forEach((message) => {
+            const messageToSend = new Message(message, null);
+            messageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
+        });
+        console.log(`Sent updates to channel ${channelToSend.id}`);
+    } else {
+        console.log('No updates to announce.', new Date());
+    }
 }
