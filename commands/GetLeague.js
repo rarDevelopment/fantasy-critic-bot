@@ -75,9 +75,7 @@ class GetLeague extends Chariot.Command {
 
         const leagueLink = `https://www.fantasycritic.games/league/${leagueId}/${year}`;
         const header = `${leagueYearData.league.leagueName} (${leagueYearData.leagueYear})`;
-        let footer =
-            this.getGameNews(leagueYearData.gameNews) +
-            `Requested by ${msg.author.username}`;
+        const footer = `Requested by ${msg.author.username}`;
 
         const messageToSend = new MessageWithEmbed(
             message,
@@ -121,28 +119,6 @@ class GetLeague extends Chariot.Command {
         } games released`;
 
         return publisherLine;
-    }
-
-    getGameNews(gameNews) {
-        let message = '';
-        if (gameNews.recentGames.length > 0) {
-            const masterGame = gameNews.recentGames[0].masterGame;
-            const publisherName = gameNews.recentGames[0].publisherName;
-            const releaseDate = DateCleaner.clean(
-                masterGame.estimatedReleaseDate
-            );
-            message += `Most recent release: '${masterGame.gameName}' on ${releaseDate} for ${publisherName}\n`;
-        }
-        if (gameNews.upcomingGames.length > 0) {
-            const masterGame = gameNews.upcomingGames[0].masterGame;
-            const publisherName = gameNews.upcomingGames[0].publisherName;
-            const releaseDate = DateCleaner.clean(
-                masterGame.estimatedReleaseDate
-            );
-            message += `Next expected release: '${masterGame.gameName}' on ${releaseDate} for ${publisherName}\n`;
-        }
-
-        return message;
     }
 }
 module.exports = new GetLeague();
