@@ -39,7 +39,8 @@ class PublicBidSubUpdater {
         }
 
         const leagueLink = `https://www.fantasycritic.games/league/${leagueYear.leagueId}/${leagueYear.leagueYear}`;
-        const finalMessage = gameMessages.join('\n') + `\n[Visit League Page](${leagueLink})`;
+        const finalMessage = gameMessages.join('\n');
+        const footer = `${leagueYear.league.leagueName} (${leagueYear.leagueYear})`;
         const lastSunday = this.getLastSunday(new Date());
         const dateString = lastSunday.toLocaleDateString('en-us', {
             year: 'numeric',
@@ -52,18 +53,18 @@ class PublicBidSubUpdater {
             finalMessage,
             header,
             null,
-            null,
+            footer,
             null,
             this.MessageColors.RegularColor,
             null,
-            null
+            leagueLink
         );
 
         this.MessageSender.sendMessage(messageToSend.buildMessage(), channelToSend, null);
     }
 
     getLastSunday(d) {
-        var t = new Date(d);
+        let t = new Date(d);
         t.setDate(t.getDate() - t.getDay());
         return t;
     }
