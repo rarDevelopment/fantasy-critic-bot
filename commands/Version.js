@@ -33,11 +33,7 @@ class Version extends Chariot.Command {
             this.MessageColors.RegularColor,
             null
         );
-        this.MessageSender.sendMessage(
-            messageToSend.buildMessage(),
-            msg.channel,
-            null
-        );
+        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
     }
 }
 

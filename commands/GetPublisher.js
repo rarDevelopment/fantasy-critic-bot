@@ -52,10 +52,7 @@ class GetPublisher extends Chariot.Command {
             return;
         }
 
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(
-            msg.channel.id,
-            msg.guildID
-        );
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
         if (!leagueChannel) {
             this.MessageSender.sendErrorMessage(
                 'No league configuration found for this channel.',
@@ -69,10 +66,7 @@ class GetPublisher extends Chariot.Command {
         }
 
         const leagueId = leagueChannel.leagueId;
-        const leagueYearData = await FantasyCriticApi.getLeagueYear(
-            leagueId,
-            new Date().getFullYear()
-        );
+        const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, new Date().getFullYear());
 
         const foundByPlayerName = leagueYearData.publishers.filter((p) =>
             p.playerName.toLowerCase().includes(termToSearch)
@@ -92,11 +86,7 @@ class GetPublisher extends Chariot.Command {
                 null
             );
 
-            this.MessageSender.sendMessage(
-                messageToSend.buildMessage(),
-                msg.channel,
-                null
-            );
+            this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
             return;
         }
 
@@ -104,14 +94,10 @@ class GetPublisher extends Chariot.Command {
             let message = '';
 
             if (foundByPlayerName.length > 0) {
-                message += `Match by player name: ${foundByPlayerName
-                    .map((p) => p.playerName)
-                    .join(', ')} \n`;
+                message += `Match by player name: ${foundByPlayerName.map((p) => p.playerName).join(', ')} \n`;
             }
             if (foundByPublisherName.length > 0) {
-                message += `Match by publisher name: ${foundByPublisherName
-                    .map((p) => p.publisherName)
-                    .join(', ')} \n`;
+                message += `Match by publisher name: ${foundByPublisherName.map((p) => p.publisherName).join(', ')} \n`;
             }
 
             const messageToSend = new MessageWithEmbed(
@@ -124,33 +110,20 @@ class GetPublisher extends Chariot.Command {
                 null
             );
 
-            this.MessageSender.sendMessage(
-                messageToSend.buildMessage(),
-                msg.channel,
-                null
-            );
+            this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
 
             return;
-        } else if (
-            foundByPlayerName.length > 0 &&
-            foundByPublisherName.length > 0
-        ) {
+        } else if (foundByPlayerName.length > 0 && foundByPublisherName.length > 0) {
             let inBothLists = [];
             foundByPlayerName.forEach((f) => {
-                const inOtherList = foundByPublisherName.find(
-                    (p) => p.publisherID === f.publisherID
-                );
+                const inOtherList = foundByPublisherName.find((p) => p.publisherID === f.publisherID);
                 if (inOtherList) {
                     inBothLists.push(f);
                 }
             });
             if (inBothLists.length !== foundByPlayerName.length) {
-                let message = `Match by player name: ${foundByPlayerName
-                    .map((p) => p.playerName)
-                    .join(', ')} \n`;
-                message += `Match by publisher name: ${foundByPublisherName
-                    .map((p) => p.publisherName)
-                    .join(', ')} \n`;
+                let message = `Match by player name: ${foundByPlayerName.map((p) => p.playerName).join(', ')} \n`;
+                message += `Match by publisher name: ${foundByPublisherName.map((p) => p.publisherName).join(', ')} \n`;
                 const messageToSend = new MessageWithEmbed(
                     message,
                     'Multiple Matches Found',
@@ -161,11 +134,7 @@ class GetPublisher extends Chariot.Command {
                     null
                 );
 
-                this.MessageSender.sendMessage(
-                    messageToSend.buildMessage(),
-                    msg.channel,
-                    null
-                );
+                this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
 
                 return;
             }
@@ -193,23 +162,13 @@ class GetPublisher extends Chariot.Command {
             return;
         }
 
-        const publisherData = await FantasyCriticApi.getPublisher(
-            publisherGuid
-        );
+        const publisherData = await FantasyCriticApi.getPublisher(publisherGuid);
 
-        const pickedGames = publisherData.games
-            .filter((g) => !g.counterPick)
-            .sort((g) => g.slotNumber);
-        const counterPickedGames = publisherData.games
-            .filter((g) => g.counterPick)
-            .sort((g) => g.slotNumber);
+        const pickedGames = publisherData.games.filter((g) => !g.counterPick).sort((g) => g.slotNumber);
+        const counterPickedGames = publisherData.games.filter((g) => g.counterPick).sort((g) => g.slotNumber);
 
-        const gamesMessage = pickedGames
-            .map((g) => this.makeGameMessage(g))
-            .join('\n');
-        const counterPickMessage = counterPickedGames
-            .map((g) => this.makeGameMessage(g))
-            .join('\n');
+        const gamesMessage = pickedGames.map((g) => this.makeGameMessage(g)).join('\n');
+        const counterPickMessage = counterPickedGames.map((g) => this.makeGameMessage(g)).join('\n');
 
         const messageToSend = new MessageWithEmbed(
             `[Visit Publisher Page](${resources.publisherUrl}${publisherGuid}/)`,
@@ -219,17 +178,10 @@ class GetPublisher extends Chariot.Command {
                 new EmbedField('Counterpicks', counterPickMessage, false),
                 new EmbedField(
                     'Current Score',
-                    ScoreRounder.round(
-                        publisherData.totalFantasyPoints,
-                        1
-                    ).toString(),
+                    ScoreRounder.round(publisherData.totalFantasyPoints, 1).toString(),
                     false
                 ),
-                new EmbedField(
-                    'Remaining Budget',
-                    `$${publisherData.budget.toString()}`,
-                    false
-                ),
+                new EmbedField('Remaining Budget', `$${publisherData.budget.toString()}`, false),
                 new EmbedField(
                     'Drops Remaining (for games that Will Release)',
                     publisherData.willReleaseDroppableGames,
@@ -241,20 +193,16 @@ class GetPublisher extends Chariot.Command {
             this.MessageColors.RegularColor,
             null
         );
-        this.MessageSender.sendMessage(
-            messageToSend.buildMessage(),
-            msg.channel,
-            null
-        );
+        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
     }
 
     makeGameMessage(g) {
         let gameMsg = `${g.gameName}`;
         if (g.fantasyPoints) {
-            gameMsg += ` - Score: ${ScoreRounder.round(
-                g.criticScore,
+            gameMsg += ` - Score: ${ScoreRounder.round(g.criticScore, 1)} - Points: ${ScoreRounder.round(
+                g.fantasyPoints,
                 1
-            )} - Points: ${ScoreRounder.round(g.fantasyPoints, 1)}`;
+            )}`;
         } else {
             if (g.releaseDate) {
                 gameMsg += ` - ${g.releaseDate.substring(0, 10)}`;

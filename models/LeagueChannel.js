@@ -12,9 +12,5 @@ const leagueChannelSchema = new mongoose.Schema(
 );
 
 module.exports = {
-    LeagueChannel: mongoose.model(
-        'leaguechannel',
-        leagueChannelSchema,
-        'leaguechannel'
-    ),
+    LeagueChannel: mongoose.model('leaguechannel', leagueChannelSchema, 'leaguechannel'),
 };

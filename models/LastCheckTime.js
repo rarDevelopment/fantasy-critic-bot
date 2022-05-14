@@ -9,9 +9,5 @@ const lastCheckTimeSchema = new mongoose.Schema(
 );
 
 module.exports = {
-    LastCheckTime: mongoose.model(
-        'lastchecktime',
-        lastCheckTimeSchema,
-        'lastchecktime'
-    ),
+    LastCheckTime: mongoose.model('lastchecktime', lastCheckTimeSchema, 'lastchecktime'),
 };

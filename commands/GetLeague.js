@@ -7,7 +7,6 @@ const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
 const ranked = require('ranked');
-const DateCleaner = require('../api/DateCleaner.js');
 
 class GetLeague extends Chariot.Command {
     constructor() {
@@ -26,10 +25,7 @@ class GetLeague extends Chariot.Command {
     }
 
     async execute(msg, args, chariot) {
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(
-            msg.channel.id,
-            msg.guildID
-        );
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
         if (!leagueChannel) {
             this.MessageSender.sendErrorMessage(
                 'No league configuration found for this channel.',
@@ -44,10 +40,7 @@ class GetLeague extends Chariot.Command {
 
         const leagueId = leagueChannel.leagueId;
         const year = new Date().getFullYear();
-        const leagueYearData = await FantasyCriticApi.getLeagueYear(
-            leagueId,
-            year
-        );
+        const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, year);
 
         if (!leagueYearData) {
             this.MessageSender.sendErrorMessage(
@@ -61,10 +54,7 @@ class GetLeague extends Chariot.Command {
             return;
         }
 
-        const rankedPublishers = ranked.ranking(
-            leagueYearData.players,
-            (pub) => pub.totalFantasyPoints
-        );
+        const rankedPublishers = ranked.ranking(leagueYearData.players, (pub) => pub.totalFantasyPoints);
 
         let message = rankedPublishers
             .sort((p1, p2) => {
@@ -75,24 +65,19 @@ class GetLeague extends Chariot.Command {
 
         const leagueLink = `https://www.fantasycritic.games/league/${leagueId}/${year}`;
         const header = `${leagueYearData.league.leagueName} (${leagueYearData.leagueYear})`;
-
-        message += '\n\n' + this.getGameNews(leagueYearData.gameNews);
-        message += `\n[Visit League Page](${leagueLink}})`;
+        const footer = `Requested by ${msg.author.username}`;
 
         const messageToSend = new MessageWithEmbed(
             message,
             header,
             null,
-            `Requested by ${msg.author.username}`,
+            footer,
             new MessageReplyDetails(msg.id, true),
             this.MessageColors.RegularColor,
-            null
+            null,
+            leagueLink
         );
-        this.MessageSender.sendMessage(
-            messageToSend.buildMessage(),
-            msg.channel,
-            null
-        );
+        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
     }
 
     getPublisherLine(rank, player, publisher) {
@@ -107,41 +92,13 @@ class GetLeague extends Chariot.Command {
         let publisherLine = `**${rank}.** `;
         publisherLine += `${publisherIcon}**${publisher.publisherName}** `;
         publisherLine += `(${publisher.playerName})${crownEmoji} \n`;
-        publisherLine += `> **${ScoreRounder.round(
-            publisher.totalFantasyPoints,
-            1
-        )} points** `;
-        publisherLine += `*(Projected: ${ScoreRounder.round(
-            publisher.totalProjectedPoints,
-            1
-        )})*\n`;
+        publisherLine += `> **${ScoreRounder.round(publisher.totalFantasyPoints, 1)} points** `;
+        publisherLine += `*(Projected: ${ScoreRounder.round(publisher.totalProjectedPoints, 1)})*\n`;
         publisherLine += `> ${publisher.gamesReleased}/${
             publisher.gamesWillRelease + publisher.gamesReleased
         } games released`;
 
         return publisherLine;
-    }
-
-    getGameNews(gameNews) {
-        let message = '';
-        if (gameNews.recentGames.length > 0) {
-            const masterGame = gameNews.recentGames[0].masterGame;
-            const publisherName = gameNews.recentGames[0].publisherName;
-            const releaseDate = DateCleaner.clean(
-                masterGame.estimatedReleaseDate
-            );
-            message += `Most recent release: **${masterGame.gameName}** on ${releaseDate} for ${publisherName}\n`;
-        }
-        if (gameNews.upcomingGames.length > 0) {
-            const masterGame = gameNews.upcomingGames[0].masterGame;
-            const publisherName = gameNews.upcomingGames[0].publisherName;
-            const releaseDate = DateCleaner.clean(
-                masterGame.estimatedReleaseDate
-            );
-            message += `Next expected release: **${masterGame.gameName}** on ${releaseDate} for ${publisherName}\n`;
-        }
-
-        return message;
     }
 }
 module.exports = new GetLeague();

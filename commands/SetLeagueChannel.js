@@ -25,11 +25,7 @@ class SetLeagueChannel extends Chariot.Command {
     }
 
     async execute(msg, args, chariot) {
-        this.RoleHelper = new RoleHelper(
-            process.env.OWNER,
-            [],
-            resources.defaultAllowedPermissionNames
-        );
+        this.RoleHelper = new RoleHelper(process.env.OWNER, [], resources.defaultAllowedPermissionNames);
 
         if (!this.RoleHelper.canAdministrate(msg.member)) {
             this.MessageSender.sendErrorMessage(
@@ -103,11 +99,7 @@ class SetLeagueChannel extends Chariot.Command {
                 new MessageColors().RegularColor,
                 null
             );
-            this.MessageSender.sendMessage(
-                messageWithEmbed.buildMessage(),
-                msg.channel,
-                null
-            );
+            this.MessageSender.sendMessage(messageWithEmbed.buildMessage(), msg.channel, null);
         } else {
             this.MessageSender.sendErrorMessage(
                 'Failed to set league for channel',

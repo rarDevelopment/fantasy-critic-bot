@@ -1,12 +1,6 @@
 const { LeagueChannel } = require('../models/LeagueChannel');
 
-function createLeagueChannelConfig(
-    leagueId,
-    channelId,
-    guildId,
-    guildName,
-    year
-) {
+function createLeagueChannelConfig(leagueId, channelId, guildId, guildName, year) {
     return new LeagueChannel({
         leagueId: leagueId,
         channelId: channelId,
@@ -27,24 +21,12 @@ exports.getLeagueChannel = function (channelId, guildId) {
     }).exec();
 };
 
-exports.setLeagueChannel = function (
-    leagueId,
-    channelId,
-    guildId,
-    guildName,
-    year
-) {
+exports.setLeagueChannel = function (leagueId, channelId, guildId, guildName, year) {
     return LeagueChannel.findOne({ channelId: channelId, guildId: guildId })
         .exec()
         .then((leagueChannelFound) => {
             if (!leagueChannelFound) {
-                leagueChannelFound = createLeagueChannelConfig(
-                    leagueId,
-                    channelId,
-                    guildId,
-                    guildName,
-                    year
-                );
+                leagueChannelFound = createLeagueChannelConfig(leagueId, channelId, guildId, guildName, year);
             } else {
                 leagueChannelFound.leagueId = leagueId;
                 leagueChannelFound.channelId = channelId;

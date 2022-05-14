@@ -1,3 +1,2 @@
-15 * * * * /usr/bin/node /root/fantasy-critic-bot/jobs/GameUpdaterJob.js
-30 * * * * /usr/bin/node /root/fantasy-critic-bot/jobs/ScoreUpdaterJob.js
-45 * * * * /usr/bin/node /root/fantasy-critic-bot/jobs/LeagueUpdaterJob.js
+1-59/30 * * * * /usr/bin/node /root/fantasy-critic-bot/jobs/GameUpdaterJob.js
+2-59/10 * * * * /usr/bin/node /root/fantasy-critic-bot/jobs/CompleteLeagueUpdaterJob.js

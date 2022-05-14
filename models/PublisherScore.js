@@ -12,9 +12,5 @@ const publisherScoreSchema = new mongoose.Schema(
 );
 
 module.exports = {
-    PublisherScore: mongoose.model(
-        'publisherscore',
-        publisherScoreSchema,
-        'publisherscore'
-    ),
+    PublisherScore: mongoose.model('publisherscore', publisherScoreSchema, 'publisherscore'),
 };
