@@ -26,6 +26,7 @@ exports.getLeagueYear = async function (leagueId, year) {
         if (!data) {
             return null;
         }
+        
         return {
             leagueId: data.leagueID,
             leagueYear: data.year,

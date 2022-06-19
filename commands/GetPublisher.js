@@ -170,9 +170,9 @@ class GetPublisher extends Chariot.Command {
         const gamesMessage = pickedGames.map((g) => this.makeGameMessage(g)).join('\n');
         const counterPickMessage = counterPickedGames.map((g) => this.makeGameMessage(g)).join('\n');
 
-        const remainingWillReleaseDrops = publisherData.willReleaseDroppableGames - publisherData.willReleaseGamesDropped;
-        const remainingWillNotReleaseDrops = publisherData.willNotReleaseDroppableGames - publisherData.willNotReleaseGamesDropped;
-        const remainingFreeDrops = publisherData.freeDroppableGames - publisherData.freeGamesDropped;
+        const remainingWillReleaseDrops = publisherData.willReleaseDroppableGames === -1 ? '♾️' : publisherData.willReleaseDroppableGames - publisherData.willReleaseGamesDropped;
+        const remainingWillNotReleaseDrops = publisherData.willNotReleaseDroppableGames === -1 ? '♾️' : publisherData.willNotReleaseDroppableGames - publisherData.willNotReleaseGamesDropped;
+        const remainingFreeDrops = publisherData.freeDroppableGames === -1 ? '♾️' : publisherData.freeDroppableGames - publisherData.freeGamesDropped;
 
         const messageToSend = new MessageWithEmbed(
             `[Visit Publisher Page](${resources.publisherUrl}${publisherGuid}/)`,
@@ -188,17 +188,17 @@ class GetPublisher extends Chariot.Command {
                 new EmbedField('Remaining Budget', `$${publisherData.budget.toString()}`, false),
                 new EmbedField(
                     `'Will Release' Drops Remaining`,
-                    remainingWillReleaseDrops == -1 ? '♾️' : remainingWillReleaseDrops,
+                    this.makeDropDisplay(remainingWillReleaseDrops, publisherData.willReleaseDroppableGames),
                     false
                 ),
                 new EmbedField(
                     `'Will Not Release' Drops Remaining`,
-                    remainingWillNotReleaseDrops == -1 ? '♾️' : remainingWillNotReleaseDrops,
+                    this.makeDropDisplay(remainingWillNotReleaseDrops, publisherData.willNotReleaseDroppableGames),
                     false
                 ),
                 new EmbedField(
                     `'Unrestricted' Drops Remaining`,
-                    remainingFreeDrops == -1 ? '♾️' : remainingFreeDrops,
+                    this.makeDropDisplay(remainingFreeDrops, publisherData.freeDroppableGames),
                     false
                 ),
             ],
@@ -208,6 +208,16 @@ class GetPublisher extends Chariot.Command {
             null
         );
         this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
+    }
+
+    makeDropDisplay(remaining, total) {
+        if (total === 0) {
+            return 'N/A';
+        }
+        if (total === -1) {
+            return '♾️';
+        }
+        return `${remaining}/${total}`;
     }
 
     makeGameMessage(g) {
