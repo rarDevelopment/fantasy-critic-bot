@@ -74,19 +74,5 @@ exports.getPublisher = async function (guid) {
 exports.getMasterGameYear = async function (year) {
     const response = await fetch(`${baseUrl}game/mastergameyear/${year}`);
     const data = await response.json();
-    const mgyData = data.map((g) => {
-        return {
-            masterGameID: g.masterGameID,
-            year: g.year,
-            gameName: g.gameName,
-            estimatedReleaseDate: g.estimatedReleaseDate,
-            releaseDate: g.releaseDate,
-            isReleased: g.isReleased,
-            willRelease: g.willRelease,
-            criticScore: g.criticScore,
-            addedTimestamp: g.addedTimestamp,
-            readableTags: g.readableTags,
-        };
-    });
-    return mgyData;
+    return data;
 };
