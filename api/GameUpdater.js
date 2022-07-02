@@ -24,7 +24,7 @@ exports.sendGameUpdatesToLeagueChannels = async function (guilds, leagueChannels
         const gameInCache = masterGameCache.find((g) => g.masterGameID === gameToCheck.masterGameID);
         if (!gameInCache) {
             gamesToUpdate.push(gameToCheck);
-            updatesToAnnounce.push(`New Game Added: **${gameToCheck.gameName}**`);
+            updatesToAnnounce.push(`New Game Added: **${gameToCheck.gameName}** (Tagged as: **${gameToCheck.readableTags.join(', ')}**)`);
         } else {
             if (gameToCheck.gameName !== gameInCache.gameName) {
                 gamesToUpdate.push(gameToCheck);

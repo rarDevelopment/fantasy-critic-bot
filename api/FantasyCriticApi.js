@@ -85,6 +85,7 @@ exports.getMasterGameYear = async function (year) {
             willRelease: g.willRelease,
             criticScore: g.criticScore,
             addedTimestamp: g.addedTimestamp,
+            readableTags: g.readableTags,
         };
     });
     return mgyData;
