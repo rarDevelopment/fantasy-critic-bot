@@ -10,9 +10,11 @@ const PublisherScoreSubUpdater = require('./SubUpdaters/PublisherScoreSubUpdater
 const TradeSubUpdater = require('./SubUpdaters/TradeSubUpdater');
 const PublicBidSubUpdater = require('./SubUpdaters/PublicBidSubUpdater.js');
 
-exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
+exports.sendLeagueYearUpdatesToLeagueChannels = async function (guilds, leagueChannels) {
     const yearToCheck = new Date().getFullYear();
     const guildsToSend = guilds.filter((g) => leagueChannels.map((l) => l.guildId).includes(g.id));
+
+    const currentDateToSave = DateTime.now().toISO();
 
     for (const leagueChannel of leagueChannels) {
         const leagueYear = await FantasyCriticApi.getLeagueYear(leagueChannel.leagueId, yearToCheck);
@@ -28,10 +30,9 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
             continue;
         }
 
-        const currentDateToSave = DateTime.now().toISO();
         const lastCheckTime = await FCDataLayer.getLastCheckTime(CheckTypes.LEAGUE_YEAR_UPDATER_CHECK);
         if (!lastCheckTime) {
-            console.log('creating');
+            console.log('creating last check time for the first time');
             await FCDataLayer.updateLastCheckTime({
                 checkType: CheckTypes.LEAGUE_YEAR_UPDATER_CHECK,
                 checkDate: currentDateToSave,
@@ -42,12 +43,11 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
         await PublisherScoreSubUpdater.scoreUpdate(leagueYear, channelToSend, sendMessages);
         await TradeSubUpdater.tradeUpdate(leagueYear, lastCheckDate, channelToSend, sendMessages);
         await PublicBidSubUpdater.publicBidUpdate(leagueYear, lastCheckDate, channelToSend);
-
-        await FCDataLayer.updateLastCheckTime({
-            checkType: CheckTypes.LEAGUE_YEAR_UPDATER_CHECK,
-            checkDate: currentDateToSave,
-        });
     }
+    await FCDataLayer.updateLastCheckTime({
+        checkType: CheckTypes.LEAGUE_YEAR_UPDATER_CHECK,
+        checkDate: currentDateToSave,
+    });
     console.log('Processed ALL leagues.');
 };
 

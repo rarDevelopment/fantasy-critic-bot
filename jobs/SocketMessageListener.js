@@ -29,7 +29,7 @@ exports.listenOnSocket = function (guildsToProcess) {
                             await GameUpdater.sendGameUpdatesToLeagueChannels(guildsToProcess, leagueChannels);
                             break;
                         case CheckTypes.LEAGUE_YEAR_UPDATER_CHECK:
-                            await ScoreUpdater.sendPublisherScoreUpdatesToLeagueChannels(
+                            await ScoreUpdater.sendLeagueYearUpdatesToLeagueChannels(
                                 guildsToProcess,
                                 leagueChannels
                             );
