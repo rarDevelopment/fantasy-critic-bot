@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const baseUrl = 'https://beta.fantasycritic.games/api/';
+const baseUrl = 'https://www.fantasycritic.games/api/';
 
 exports.getLeague = async function (leagueId) {
     const response = await fetch(`${baseUrl}league/getLeague/${leagueId}`);
