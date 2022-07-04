@@ -16,7 +16,9 @@ class PublicBidSubUpdater {
             return;
         }
 
-        if (lastCheckDate > DateTime.fromISO(leagueYear.publicBiddingGames.postedTimestamp)) {
+        const posted = DateTime.fromISO(leagueYear.publicBiddingGames.postedTimestamp);
+
+        if (lastCheckDate > posted) {
             return;
         }
 

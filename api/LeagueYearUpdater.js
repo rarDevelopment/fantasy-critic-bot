@@ -42,12 +42,11 @@ exports.sendPublisherScoreUpdatesToLeagueChannels = async function (guilds, leag
         await PublisherScoreSubUpdater.scoreUpdate(leagueYear, channelToSend, sendMessages);
         await TradeSubUpdater.tradeUpdate(leagueYear, lastCheckDate, channelToSend, sendMessages);
         await PublicBidSubUpdater.publicBidUpdate(leagueYear, lastCheckDate, channelToSend);
-
-        await FCDataLayer.updateLastCheckTime({
-            checkType: CheckTypes.LEAGUE_YEAR_UPDATER_CHECK,
-            checkDate: currentDateToSave,
-        });
     }
+    await FCDataLayer.updateLastCheckTime({
+        checkType: CheckTypes.LEAGUE_YEAR_UPDATER_CHECK,
+        checkDate: currentDateToSave,
+    });
     console.log('Processed ALL leagues.');
 };
 
