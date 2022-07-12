@@ -2,6 +2,10 @@
 
 A bot for interacting with your [Fantasy Critic](https://www.fantasycritic.games/) league.
 
+# Inviting the Bot to your Server
+
+[Click here](https://discord.com/api/oauth2/authorize?client_id=936106026695028807&permissions=139586914368&scope=bot) to add the bot to your server
+
 ## Bot Features
 
 This bot will allow players to view information about the league, their rosters, and upcoming game release dates. Additionally, it will provide periodic updates on added games, league score updates, and league actions like bid wins and drops.
