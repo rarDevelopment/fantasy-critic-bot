@@ -24,7 +24,7 @@ const bot = new Eris.CommandClient(process.env.BOT_TOKEN, {}, {
     getAllUsers: true,
     intents: 32571,
     owner: "rarDevelopment",
-    prefix: "fc.",
+    prefix: ["fc.", "Fc.", "fC.", "FC."],
     description: "Fantasy Critic Bot"
 });
 
