@@ -1,4 +1,3 @@
-const Chariot = require('chariot.js');
 const MessageColors = require('discord-helper-lib/MessageColors');
 const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
 const MessageSender = require('discord-helper-lib/MessageSender.js');
@@ -9,15 +8,15 @@ const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
 const resources = require('../settings/resources.json');
 
-class GetPublisher extends Chariot.Command {
+class GetPublisher {
     constructor() {
-        super();
+        
         this.name = 'pub';
         this.cooldown = 0;
         this.help = {
             message: `Get publisher information. You can search with just a portion of the name`,
             usage: 'pub [player name | publisher name]',
-            example: ['pub jeff', 'pub bronsonia'],
+            example: ['pub jeff', 'pub rar'],
             inline: true,
         };
 
@@ -25,7 +24,7 @@ class GetPublisher extends Chariot.Command {
         this.MessageColors = new MessageColors();
     }
 
-    async execute(msg, args, chariot) {
+    async execute(msg, args) {
         if (args < 1) {
             this.MessageSender.sendErrorMessage(
                 'You must provide a publisher search term',

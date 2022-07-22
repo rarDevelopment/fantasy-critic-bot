@@ -1,4 +1,3 @@
-const Chariot = require('chariot.js');
 const MessageColors = require('discord-helper-lib/MessageColors');
 const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
 const MessageSender = require('discord-helper-lib/MessageSender.js');
@@ -9,9 +8,9 @@ const ScoreRounder = require('../api/ScoreRounder.js');
 const EmbedField = require('discord-helper-lib/EmbedField');
 const resources = require('../settings/resources.json');
 
-class GetLeague extends Chariot.Command {
+class GetLeague {
     constructor() {
-        super();
+        
         this.name = 'pubgame';
         this.cooldown = 2;
         this.help = {
@@ -25,7 +24,7 @@ class GetLeague extends Chariot.Command {
         this.MessageColors = new MessageColors();
     }
 
-    async execute(msg, args, chariot) {
+    async execute(msg, args) {
         const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
         if (!leagueChannel) {
             this.MessageSender.sendErrorMessage(

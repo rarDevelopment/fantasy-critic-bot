@@ -1,4 +1,3 @@
-const Chariot = require('chariot.js');
 const MessageColors = require('discord-helper-lib/MessageColors');
 const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
 const MessageSender = require('discord-helper-lib/MessageSender.js');
@@ -7,9 +6,9 @@ const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const DateCleaner = require('../api/DateCleaner.js');
 
-class GetUpcoming extends Chariot.Command {
+class GetUpcoming {
     constructor() {
-        super();
+        
         this.name = 'upcoming';
         this.cooldown = 2;
         this.aliases = ['up'];
@@ -24,7 +23,7 @@ class GetUpcoming extends Chariot.Command {
         this.MessageColors = new MessageColors();
     }
 
-    async execute(msg, args, chariot) {
+    async execute(msg, args) {
         const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
         if (!leagueChannel) {
             this.MessageSender.sendErrorMessage(

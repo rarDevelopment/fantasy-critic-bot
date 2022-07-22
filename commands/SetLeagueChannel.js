@@ -1,4 +1,3 @@
-const Chariot = require('chariot.js');
 const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
 const MessageSender = require('discord-helper-lib/MessageSender.js');
 const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed.js');
@@ -8,9 +7,9 @@ const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const resources = require('../settings/resources.json');
 
-class SetLeagueChannel extends Chariot.Command {
+class SetLeagueChannel {
     constructor() {
-        super();
+
         this.name = 'setleague';
         this.cooldown = 2;
         this.help = {
@@ -24,7 +23,7 @@ class SetLeagueChannel extends Chariot.Command {
         this.MessageColors = new MessageColors();
     }
 
-    async execute(msg, args, chariot) {
+    async execute(msg, args) {
         this.RoleHelper = new RoleHelper(process.env.OWNER, [], resources.defaultAllowedPermissionNames);
 
         if (!this.RoleHelper.canAdministrate(msg.member)) {
@@ -78,12 +77,12 @@ class SetLeagueChannel extends Chariot.Command {
             );
             return;
         }
-
+        
         const success = await ConfigDataLayer.setLeagueChannel(
             leagueId,
             msg.channel.id,
             msg.guildID,
-            msg.guild.name,
+            msg.channel.guild.name,
             year
         );
 

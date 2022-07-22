@@ -1,15 +1,14 @@
-const Chariot = require('chariot.js');
 const packageJson = require('../package.json');
 const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed');
 const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails');
 const MessageSender = require('discord-helper-lib/MessageSender');
 const MessageColors = require('discord-helper-lib/MessageColors');
 
-class Version extends Chariot.Command {
-    BotDisplayName = 'FC Interim Bot';
+class Version {
+    BotDisplayName = 'Fantasy Critic Bot';
 
     constructor() {
-        super();
+        
         this.name = 'version';
         this.aliases = ['v'];
         this.cooldown = 0;
@@ -23,7 +22,7 @@ class Version extends Chariot.Command {
         this.MessageColors = new MessageColors();
     }
 
-    async execute(msg, args, chariot) {
+    async execute(msg, args) {
         const messageToSend = new MessageWithEmbed(
             `${this.BotDisplayName} is at version **${packageJson.version}**`,
             'Bot Version',
