@@ -1,12 +1,11 @@
-const Chariot = require('chariot.js');
 const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
 const MessageSender = require('discord-helper-lib/MessageSender.js');
 const Message = require('discord-helper-lib/Message.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 
-class GetLeagueLink extends Chariot.Command {
+class GetLeagueLink {
     constructor() {
-        super();
+
         this.name = 'link';
         this.cooldown = 2;
         this.help = {
@@ -19,7 +18,7 @@ class GetLeagueLink extends Chariot.Command {
         this.MessageSender = new MessageSender();
     }
 
-    async execute(msg, args, chariot) {
+    async execute(msg, args) {
         const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
         if (!leagueChannel) {
             this.MessageSender.sendErrorMessage(
