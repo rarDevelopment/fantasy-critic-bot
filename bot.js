@@ -7,8 +7,9 @@ const GetPublisherGame = require("./commands/GetPublisherGame.js");
 const GetUpcoming = require("./commands/GetUpcoming.js");
 const SetLeagueChannel = require("./commands/SetLeagueChannel.js");
 const Version = require("./commands/Version.js");
-require('dotenv').config();
 const SocketMessageListener = require('./jobs/SocketMessageListener.js');
+const CommandRegistration = require('discord-helper-lib/CommandRegistration');
+require('dotenv').config();
 
 const commands = [
     GetLeague,
@@ -28,6 +29,10 @@ const bot = new Eris.CommandClient(process.env.BOT_TOKEN, {}, {
     description: "Fantasy Critic Bot"
 });
 
+bot.once("ready", function (evt) {
+    new CommandRegistration().registerCommands(bot, commands);
+});
+
 bot.on("ready", function (evt) {
     console.log(`Logged in as: ${bot.user.username} (${bot.user.id})`);
 
@@ -42,18 +47,6 @@ bot.on("ready", function (evt) {
 
     this.editStatus('online', { name: 'fc.help', type: 0 });
     SocketMessageListener.listenOnSocket(this.guilds);
-
-    commands.forEach(command => {
-        bot.registerCommand(command.name, command.execute.bind(command), {
-            description: command.help.usage,
-            fullDescription: command.help.message
-        });
-        if (command.aliases) {
-            command.aliases.forEach(alias => {
-                bot.registerCommandAlias(alias, command.name);
-            });
-        }
-    });
 });
 
 bot.on("error", (err) => {
