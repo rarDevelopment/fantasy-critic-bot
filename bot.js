@@ -31,6 +31,7 @@ const bot = new Eris.CommandClient(process.env.BOT_TOKEN, {}, {
 
 bot.once("ready", function (evt) {
     new CommandRegistration().registerCommands(bot, commands);
+    SocketMessageListener.listenOnSocket(this.guilds);
 });
 
 bot.on("ready", function (evt) {
@@ -46,7 +47,6 @@ bot.on("ready", function (evt) {
     });
 
     this.editStatus('online', { name: 'fc.help', type: 0 });
-    SocketMessageListener.listenOnSocket(this.guilds);
 });
 
 bot.on("error", (err) => {

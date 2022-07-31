@@ -1,6 +1,6 @@
 {
     "name": "fantasy-critic-bot",
-    "version": "1.15.2",
+    "version": "1.15.3",
     "description": "Fantasy Critic Bot",
     "main": "bot.js",
     "author": "rardk64",
@@ -10,7 +10,7 @@
         "lint": "eslint *.js --ignore-pattern node_modules/"
     },
     "dependencies": {
-        "discord-helper-lib": "^1.13.0",
+        "discord-helper-lib": "^1.15.0",
         "dotenv": "^16.0.0",
         "eris": "^0.17.1",
         "eslint": "^8.15.0",
