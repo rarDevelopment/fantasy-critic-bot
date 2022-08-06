@@ -15,9 +15,13 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (guilds, leagueChanne
 
     for (const leagueChannel of leagueChannels) {
         const leagueActions = await FantasyCriticApi.getLeagueActions(leagueChannel.leagueId, yearToCheck);
+        if (!leagueActions) {
+            console.error(`Could not find league actions for league ${leagueChannel.leagueId} for channel ${leagueChannel.channelId} in guild ${leagueChannel.guildId} (${leagueChannel.guildName})`);
+            continue;
+        }
         const lastCheckTime = await FCDataLayer.getLastCheckTime(CheckTypes.LEAGUE_ACTION_CHECK);
         if (!lastCheckTime) {
-            console.log('creating');
+            console.log('creating last check time for league action checks for the first time');
             await FCDataLayer.updateLastCheckTime({
                 checkType: CheckTypes.LEAGUE_ACTION_CHECK,
                 checkDate: currentDateToSave,
@@ -42,12 +46,12 @@ exports.sendLeagueUpdatesToLeagueChannels = async function (guilds, leagueChanne
 
         const guildToSend = guildsToSend.find((g) => g.id === leagueChannel.guildId);
         if (!guildToSend) {
-            console.log(`Could not find guild with id ${leagueChannel.guildId}`);
+            console.error(`Could not find guild with id ${leagueChannel.guildId}`);
             continue;
         }
         const channelToSend = guildToSend.channels.find((c) => c.id === leagueChannel.channelId);
         if (!channelToSend) {
-            console.log(`Could not find channel with id ${leagueChannel.channelId}`);
+            console.error(`Could not find channel with id ${leagueChannel.channelId}`);
             continue;
         }
 

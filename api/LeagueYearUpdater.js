@@ -18,15 +18,18 @@ exports.sendLeagueYearUpdatesToLeagueChannels = async function (guilds, leagueCh
 
     for (const leagueChannel of leagueChannels) {
         const leagueYear = await FantasyCriticApi.getLeagueYear(leagueChannel.leagueId, yearToCheck);
-
+        if (!leagueYear) {
+            console.error(`Could not find league with leagueId ${leagueChannel.leagueId} for channel ${leagueChannel.channelId} in guild ${leagueChannel.guildId} (${leagueChannel.guildName})`);
+            continue;
+        }
         const guildToSend = guildsToSend.find((g) => g.id === leagueChannel.guildId);
         if (!guildToSend) {
-            console.log(`Could not find guild with id ${leagueChannel.guildId}`);
+            console.error(`Could not find guild with id ${leagueChannel.guildId}`);
             continue;
         }
         const channelToSend = guildToSend.channels.find((c) => c.id === leagueChannel.channelId);
         if (!channelToSend) {
-            console.log(`Could not find channel with id ${leagueChannel.channelId}`);
+            console.error(`Could not find channel with id ${leagueChannel.channelId}`);
             continue;
         }
 
