@@ -1,15 +1,16 @@
+const Eris = require('eris');
 const MessageColors = require('discord-helper-lib/MessageColors');
-const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
-const MessageSender = require('discord-helper-lib/MessageSender.js');
 const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed.js');
 const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const DateCleaner = require('../api/DateCleaner.js');
+const DiscordSlashCommand = require('discord-helper-lib/DiscordSlashCommand.js');
 
-class GetUpcoming {
+class GetUpcoming extends DiscordSlashCommand {
     constructor() {
-        
+        super();
         this.name = 'upcoming';
+        this.description = `Get upcoming releases for publishers in the league.`;
         this.cooldown = 2;
         this.aliases = ['up'];
         this.help = {
@@ -18,22 +19,16 @@ class GetUpcoming {
             example: ['upcoming'],
             inline: true,
         };
+        this.type = Eris.Constants.ApplicationCommandTypes.CHAT_INPUT;
 
-        this.MessageSender = new MessageSender();
         this.MessageColors = new MessageColors();
     }
 
-    async execute(msg, args) {
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
+    async execute(interaction) {
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(interaction.channel.id, interaction.channel.guild.id);
         if (!leagueChannel) {
-            this.MessageSender.sendErrorMessage(
-                'No league configuration found for this channel.',
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            const message = new Message(`No league configuration found for this channel.`);
+            interaction.createMessage(message.buildMessage());
             return;
         }
 
@@ -42,14 +37,8 @@ class GetUpcoming {
         const upcomingGamesData = await FantasyCriticApi.getLeagueUpcoming(leagueId, year);
 
         if (!upcomingGamesData) {
-            this.MessageSender.sendErrorMessage(
-                `No data found for the league with ID ${leagueId}.`,
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            const message = new Message(`No data found for the league with ID ${leagueId}.`);
+            interaction.createMessage(message.buildMessage());
             return;
         }
 
@@ -66,12 +55,12 @@ class GetUpcoming {
             message,
             `Upcoming Publisher Releases`,
             null,
-            `Requested by ${msg.author.username}`,
-            new MessageReplyDetails(msg.id, true),
+            `Requested by ${interaction.member.user.username}`,
+            null,
             this.MessageColors.RegularColor,
             null
         );
-        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
+        interaction.createMessage(messageToSend.buildMessage());
     }
 }
 module.exports = new GetUpcoming();

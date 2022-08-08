@@ -1,15 +1,17 @@
+const Eris = require('eris');
 const MessageColors = require('discord-helper-lib/MessageColors');
-const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
-const MessageSender = require('discord-helper-lib/MessageSender.js');
-const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed.js');
-const FantasyCriticApi = require('../api/FantasyCriticApi.js');
-const ConfigDataLayer = require('../api/ConfigDataLayer.js');
-const ScoreRounder = require('../api/ScoreRounder.js');
+const DiscordSlashCommand = require('discord-helper-lib/DiscordSlashCommand');
+const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed');
+const FantasyCriticApi = require('../api/FantasyCriticApi');
+const ConfigDataLayer = require('../api/ConfigDataLayer');
+const ScoreRounder = require('../api/ScoreRounder');
 const ranked = require('ranked');
 
-class GetLeague {
+class GetLeague extends DiscordSlashCommand {
     constructor() {
+        super();
         this.name = 'league';
+        this.description = `Get league information.`;
         this.cooldown = 2;
         this.help = {
             message: `Get league information.`,
@@ -17,22 +19,15 @@ class GetLeague {
             example: ['league'],
             inline: true,
         };
+        this.type = Eris.Constants.ApplicationCommandTypes.CHAT_INPUT;
 
-        this.MessageSender = new MessageSender();
         this.MessageColors = new MessageColors();
     }
 
-    async execute(msg, args) {
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
+    async execute(interaction) {
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(interaction.channel.id, interaction.channel.guild.id);
         if (!leagueChannel) {
-            this.MessageSender.sendErrorMessage(
-                'No league configuration found for this channel.',
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            interaction.createMessage('**Something went wrong:** No league configuration found for this channel.');
             return;
         }
 
@@ -41,14 +36,7 @@ class GetLeague {
         const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, year);
 
         if (!leagueYearData) {
-            this.MessageSender.sendErrorMessage(
-                `No league found with ID ${leagueId}.`,
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            interaction.createMessage(`**Something went wrong:** No league found with ID ${leagueId}.`);
             return;
         }
 
@@ -63,19 +51,19 @@ class GetLeague {
 
         const leagueLink = `https://www.fantasycritic.games/league/${leagueId}/${year}`;
         const header = `${leagueYearData.league.leagueName} (${leagueYearData.leagueYear})`;
-        const footer = `Requested by ${msg.author.username}`;
+        const footer = `Requested by ${interaction.member.user.username}`;
 
         const messageToSend = new MessageWithEmbed(
             message,
             header,
             null,
             footer,
-            new MessageReplyDetails(msg.id, true),
+            null,
             this.MessageColors.RegularColor,
             null,
             leagueLink
         );
-        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
+        interaction.createMessage(messageToSend.buildMessage());
     }
 
     getPublisherLine(rank, player, publisher) {
@@ -92,9 +80,8 @@ class GetLeague {
         publisherLine += `(${publisher.playerName})${crownEmoji} \n`;
         publisherLine += `> **${ScoreRounder.round(publisher.totalFantasyPoints, 1)} points** `;
         publisherLine += `*(Projected: ${ScoreRounder.round(publisher.totalProjectedPoints, 1)})*\n`;
-        publisherLine += `> ${publisher.gamesReleased}/${
-            publisher.gamesWillRelease + publisher.gamesReleased
-        } games released`;
+        publisherLine += `> ${publisher.gamesReleased}/${publisher.gamesWillRelease + publisher.gamesReleased
+            } games released`;
 
         return publisherLine;
     }

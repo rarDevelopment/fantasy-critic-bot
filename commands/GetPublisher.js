@@ -1,17 +1,19 @@
+const Eris = require('eris');
 const MessageColors = require('discord-helper-lib/MessageColors');
-const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
-const MessageSender = require('discord-helper-lib/MessageSender.js');
 const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed.js');
 const EmbedField = require('discord-helper-lib/EmbedField.js');
 const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
 const resources = require('../settings/resources.json');
+const DiscordSlashCommand = require('discord-helper-lib/DiscordSlashCommand.js');
+const Message = require('discord-helper-lib/Message.js');
 
-class GetPublisher {
+class GetPublisher extends DiscordSlashCommand {
     constructor() {
-        
+        super();
         this.name = 'pub';
+        this.description = `Get publisher information. You can search with just a portion of the name.`;
         this.cooldown = 0;
         this.help = {
             message: `Get publisher information. You can search with just a portion of the name`,
@@ -19,48 +21,39 @@ class GetPublisher {
             example: ['pub jeff', 'pub rar'],
             inline: true,
         };
+        this.type = Eris.Constants.ApplicationCommandTypes.CHAT_INPUT;
+        this.options = [
+            {
+                name: 'publisher_or_player_name',
+                description: `The publisher name or player name that you're searching for.`,
+                type: Eris.Constants.ApplicationCommandOptionTypes.STRING,
+                required: true
+            }
+        ];
 
-        this.MessageSender = new MessageSender();
         this.MessageColors = new MessageColors();
     }
 
-    async execute(msg, args) {
-        if (args < 1) {
-            this.MessageSender.sendErrorMessage(
-                'You must provide a publisher search term',
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+    async execute(interaction) {
+        const searchArg = interaction.data.options.find(o => o.name === "publisher_or_player_name");
+        if (!searchArg) {
+            const message = new Message(`You must provide a publisher search term.`);
+            interaction.createMessage(message.buildMessage());
             return;
         }
 
-        const termToSearch = args[0].toLowerCase().trim();
+        const termToSearch = searchArg.value.toLowerCase().trim();
 
         if (termToSearch.length < 2) {
-            this.MessageSender.sendErrorMessage(
-                'Please provide at least 3 characters to search with',
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            const message = new Message(`Please provide at least 3 characters to search with.`);
+            interaction.createMessage(message.buildMessage());
             return;
         }
 
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(interaction.channel.id, interaction.channel.guild.id);
         if (!leagueChannel) {
-            this.MessageSender.sendErrorMessage(
-                'No league configuration found for this channel.',
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            const message = new Message(`No league configuration found for this channel.`);
+            interaction.createMessage(message.buildMessage());
             return;
         }
 
@@ -79,13 +72,13 @@ class GetPublisher {
                 'No matches were found for your query.',
                 'No Matches Found',
                 null,
-                `Requested by ${msg.author.username}`,
-                new MessageReplyDetails(msg.id, true),
+                `Requested by ${interaction.member.user.username}`,
+                null,
                 this.MessageColors.RegularColor,
                 null
             );
 
-            this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
+            interaction.createMessage(messageToSend.buildMessage());
             return;
         }
 
@@ -103,16 +96,17 @@ class GetPublisher {
                 message,
                 'Multiple Matches Found',
                 null,
-                `Requested by ${msg.author.username}`,
-                new MessageReplyDetails(msg.id, true),
+                `Requested by ${interaction.member.user.username}`,
+                null,
                 this.MessageColors.RegularColor,
                 null
             );
 
-            this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
+            interaction.createMessage(messageToSend.buildMessage());
 
             return;
-        } else if (foundByPlayerName.length > 0 && foundByPublisherName.length > 0) {
+        }
+        else if (foundByPlayerName.length > 0 && foundByPublisherName.length > 0) {
             let inBothLists = [];
             foundByPlayerName.forEach((f) => {
                 const inOtherList = foundByPublisherName.find((p) => p.publisherID === f.publisherID);
@@ -127,14 +121,13 @@ class GetPublisher {
                     message,
                     'Multiple Matches Found',
                     null,
-                    `Requested by ${msg.author.username}`,
-                    new MessageReplyDetails(msg.id, true),
+                    `Requested by ${interaction.member.user.username}`,
+                    null,
                     this.MessageColors.RegularColor,
                     null
                 );
 
-                this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
-
+                interaction.createMessage(messageToSend.buildMessage());
                 return;
             }
         }
@@ -150,14 +143,8 @@ class GetPublisher {
         }
 
         if (!publisherGuid) {
-            this.MessageSender.sendErrorMessage(
-                'Something went wrong.',
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            const messageToSend = new Message('Something went wrong.');
+            interaction.createMessage(messageToSend.buildMessage());
             return;
         }
 
@@ -201,12 +188,12 @@ class GetPublisher {
                     false
                 ),
             ],
-            `Requested by ${msg.author.username}`,
-            new MessageReplyDetails(msg.id, true),
+            `Requested by ${interaction.member.user.username}`,
+            null,
             this.MessageColors.RegularColor,
             null
         );
-        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
+        interaction.createMessage(messageToSend.buildMessage());
     }
 
     makeDropDisplay(remaining, total) {

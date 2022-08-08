@@ -1,17 +1,19 @@
+const Eris = require('eris');
 const MessageColors = require('discord-helper-lib/MessageColors');
-const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
-const MessageSender = require('discord-helper-lib/MessageSender.js');
 const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed.js');
 const FantasyCriticApi = require('../api/FantasyCriticApi.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
 const ScoreRounder = require('../api/ScoreRounder.js');
 const EmbedField = require('discord-helper-lib/EmbedField');
 const resources = require('../settings/resources.json');
+const Message = require('discord-helper-lib/Message.js');
+const DiscordSlashCommand = require('discord-helper-lib/DiscordSlashCommand.js');
 
-class GetLeague {
+class GetLeague extends DiscordSlashCommand {
     constructor() {
-        
+        super();
         this.name = 'pubgame';
+        this.description = `Get a game from publishers in the league.`;
         this.cooldown = 2;
         this.help = {
             message: `Get a game from publishers in the league.`,
@@ -20,49 +22,41 @@ class GetLeague {
             inline: true,
         };
 
-        this.MessageSender = new MessageSender();
+        this.type = Eris.Constants.ApplicationCommandTypes.CHAT_INPUT;
+        this.options = [
+            {
+                name: 'game_name',
+                description: `The game name that you're searching for.`,
+                type: Eris.Constants.ApplicationCommandOptionTypes.STRING,
+                required: true
+            }
+        ];
+
         this.MessageColors = new MessageColors();
     }
 
-    async execute(msg, args) {
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
+    async execute(interaction) {
+        const searchArg = interaction.data.options.find(o => o.name === "game_name");
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(interaction.channel.id, interaction.channel.guild.id);
         if (!leagueChannel) {
-            this.MessageSender.sendErrorMessage(
-                'No league configuration found for this channel.',
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            const messageToSend = new Message(`No league configuration found for this channel.`);
+            interaction.createMessage(messageToSend.buildMessage());
             return;
         }
 
-        if (args.length < 1) {
-            this.MessageSender.sendErrorMessage(
-                'You must specify a game name to search.',
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+        if (!searchArg) {
+            const messageToSend = new Message(`You must specify a game name to search.`);
+            interaction.createMessage(messageToSend.buildMessage());
             return;
         }
 
-        let gameNameToSearch = args.join(' ');
+        let gameNameToSearch = searchArg.value;
         gameNameToSearch = gameNameToSearch.trim().toLowerCase();
         gameNameToSearch = this.stripAccentedCharactersAndStuff(gameNameToSearch);
 
         if (gameNameToSearch.length <= 2) {
-            this.MessageSender.sendErrorMessage(
-                'Please provide at least 3 characters to search with',
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            const messageToSend = new Message(`Please provide at least 3 characters to search with.`);
+            interaction.createMessage(messageToSend.buildMessage());
             return;
         }
 
@@ -71,14 +65,8 @@ class GetLeague {
         const leagueYearData = await FantasyCriticApi.getLeagueYear(leagueId, year);
 
         if (!leagueYearData) {
-            this.MessageSender.sendErrorMessage(
-                `No league found with ID ${leagueId}.`,
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            const messageToSend = new Message(`No league found with ID ${leagueId}.`);
+            interaction.createMessage(messageToSend.buildMessage());
             return;
         }
 
@@ -134,24 +122,23 @@ class GetLeague {
             embedFieldsToAdd.length === 0 ? 'No games found.' : null,
             `Games Found`,
             embedFieldsToAdd,
-            `Requested by ${msg.author.username}`,
-            new MessageReplyDetails(msg.id, true),
+            `Requested by ${interaction.member.user.username}`,
+            null,
             this.MessageColors.RegularColor,
             null
         );
 
-        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
+        interaction.createMessage(messageToSend.buildMessage());
     }
 
     buildMessageFromGamesArray(games, publisher, isCounterPick) {
         return games
             .filter((g) => g.counterPick === isCounterPick)
             .map((g) => {
-                const scoreOrDate = `${
-                    g.isReleased
-                        ? (g.fantasyPoints !== null ? ScoreRounder.round(g.fantasyPoints, 1) : '0') + ' points'
-                        : g.estimatedReleaseDate
-                }`;
+                const scoreOrDate = `${g.isReleased
+                    ? (g.fantasyPoints !== null ? ScoreRounder.round(g.fantasyPoints, 1) : '0') + ' points'
+                    : g.estimatedReleaseDate
+                    }`;
                 const gameName = g.masterGameId
                     ? `[${g.gameName}](${resources.masterGameUrl}${g.masterGameId})`
                     : g.gameName;

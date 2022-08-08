@@ -30,7 +30,7 @@ const bot = new Eris.CommandClient(process.env.BOT_TOKEN, {}, {
 });
 
 bot.once("ready", function (evt) {
-    new CommandRegistration().registerCommands(bot, commands);
+    new CommandRegistration().registerSlashCommands(bot, commands);
     SocketMessageListener.listenOnSocket(this.guilds);
 });
 
@@ -47,6 +47,12 @@ bot.on("ready", function (evt) {
     });
 
     this.editStatus('online', { name: 'fc.help', type: 0 });
+});
+
+bot.on("interactionCreate", (interaction) => {
+    if (interaction instanceof Eris.CommandInteraction) {
+        new CommandRegistration().setUpSlashCommand(interaction, commands);
+    }
 });
 
 bot.on("error", (err) => {
