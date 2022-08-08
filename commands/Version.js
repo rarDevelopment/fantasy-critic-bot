@@ -1,38 +1,35 @@
+const Eris = require('eris');
 const packageJson = require('../package.json');
 const MessageWithEmbed = require('discord-helper-lib/MessageWithEmbed');
-const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails');
-const MessageSender = require('discord-helper-lib/MessageSender');
 const MessageColors = require('discord-helper-lib/MessageColors');
+const DiscordSlashCommand = require('discord-helper-lib/DiscordSlashCommand');
 
-class Version {
-    BotDisplayName = 'Fantasy Critic Bot';
-
+class Version extends DiscordSlashCommand {
     constructor() {
-        
+        super();
         this.name = 'version';
+        this.description = "See the bot's current version number."
         this.aliases = ['v'];
         this.cooldown = 0;
         this.help = {
             message: `Get the bot's version number.`,
             usage: 'version',
             example: ['version', 'v'],
-            inline: true,
+            inline: true
         };
-        this.MessageSender = new MessageSender();
-        this.MessageColors = new MessageColors();
+        this.type = Eris.Constants.ApplicationCommandTypes.CHAT_INPUT;
     }
 
-    async execute(msg, args) {
+    async execute(interaction) {
         const messageToSend = new MessageWithEmbed(
-            `${this.BotDisplayName} is at version **${packageJson.version}**`,
-            'Bot Version',
+            `${packageJson.name} is at version **${packageJson.version}**`,
+            "Bot Version",
             null,
-            `Requested by ${msg.author.username}`,
-            new MessageReplyDetails(msg.id, false),
-            this.MessageColors.RegularColor,
-            null
-        );
-        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
+            `Requested by ${interaction.member.username}`,
+            null,
+            new MessageColors().RegularColor,
+            null);
+        interaction.createMessage(messageToSend.buildMessage());
     }
 }
 

@@ -1,15 +1,25 @@
 const Eris = require("eris");
 const mongoose = require('mongoose');
-const GetLeague = require("./commands/GetLeague.js");
-const GetLeagueLink = require("./commands/GetLeagueLink.js");
-const GetPublisher = require("./commands/GetPublisher.js");
-const GetPublisherGame = require("./commands/GetPublisherGame.js");
-const GetUpcoming = require("./commands/GetUpcoming.js");
-const SetLeagueChannel = require("./commands/SetLeagueChannel.js");
-const Version = require("./commands/Version.js");
-const SocketMessageListener = require('./jobs/SocketMessageListener.js');
+const GetLeague = require("./commands/GetLeague");
+const GetLeagueLink = require("./commands/GetLeagueLink");
+const GetPublisher = require("./commands/GetPublisher");
+const GetPublisherGame = require("./commands/GetPublisherGame");
+const GetUpcoming = require("./commands/GetUpcoming");
+const SetLeagueChannel = require("./commands/SetLeagueChannel");
+const Version = require("./commands/Version");
+const SocketMessageListener = require('./jobs/SocketMessageListener');
 const CommandRegistration = require('discord-helper-lib/CommandRegistration');
+const EventRegistration = require('discord-helper-lib/EventRegistration');
+const MessageCreate = require("./events/MessageCreate");
 require('dotenv').config();
+
+const bot = new Eris.CommandClient(process.env.BOT_TOKEN, {}, {
+    getAllUsers: true,
+    intents: 32571,
+    owner: "rarDevelopment",
+    prefix: ["fc.", "Fc.", "fC.", "FC."],
+    description: "Fantasy Critic Bot"
+});
 
 const commands = [
     GetLeague,
@@ -21,18 +31,16 @@ const commands = [
     Version
 ];
 
-const bot = new Eris.CommandClient(process.env.BOT_TOKEN, {}, {
-    getAllUsers: true,
-    intents: 32571,
-    owner: "rarDevelopment",
-    prefix: ["fc.", "Fc.", "fC.", "FC."],
-    description: "Fantasy Critic Bot"
-});
+const events = [
+    new MessageCreate(bot)
+];
 
 bot.once("ready", function (evt) {
-    new CommandRegistration().registerCommands(bot, commands);
+    new CommandRegistration().registerSlashCommands(bot, commands);
     SocketMessageListener.listenOnSocket(this.guilds);
 });
+
+new EventRegistration().registerEvents(bot, events);
 
 bot.on("ready", function (evt) {
     console.log(`Logged in as: ${bot.user.username} (${bot.user.id})`);
@@ -47,6 +55,12 @@ bot.on("ready", function (evt) {
     });
 
     this.editStatus('online', { name: 'fc.help', type: 0 });
+});
+
+bot.on("interactionCreate", (interaction) => {
+    if (interaction instanceof Eris.CommandInteraction) {
+        new CommandRegistration().setUpSlashCommand(interaction, commands);
+    }
 });
 
 bot.on("error", (err) => {

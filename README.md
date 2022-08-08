@@ -4,7 +4,7 @@ A bot for interacting with your [Fantasy Critic](https://www.fantasycritic.games
 
 # Inviting the Bot to your Server
 
-[Click here](https://discord.com/api/oauth2/authorize?client_id=936106026695028807&permissions=139586914368&scope=bot) to add the bot to your server
+[Click here](https://discord.com/api/oauth2/authorize?client_id=936106026695028807&permissions=139586947136&scope=bot%20applications.commands) to add the bot to your server
 
 ## Bot Features
 
@@ -14,23 +14,21 @@ This bot will allow players to view information about the league, their rosters,
 
 ## Using Bot Commands
 
-Bot Prefix: `fc.`
+The bot uses slash commands, so type `/` and one of the following commands to use the bot's features.
 
-`fc.setleague [league ID] [year]` - Set your league and year by providing your [league ID](#getting-your-league-id) and year.
+`/setleague [league ID] [year]` - Set your league and year by providing your [league ID](#getting-your-league-id) and year.
 
-`fc.league` - Get the current ranking of all players and their scores.
+`/league` - Get the current ranking of all players and their scores.
 
-`fc.pub [publisher name or player name]` - Show details on a publisher via their publisher name or their player name. You only need to provide a portion of their name to search.
+`/pub [publisher name or player name]` - Show details on a publisher via their publisher name or their player name. You only need to provide a portion of their name to search.
 
-`fc.pubgame [game name]` - Show details on a game, as long as that game is in the roster of one of the publishers in the league. You only need to provide a portion of its name to search.
+`/pubgame [game name]` - Show details on a game, as long as that game is in the roster of one of the publishers in the league. You only need to provide a portion of its name to search.
 
-`fc.upcoming` - Show a list of games with upcoming release dates.
+`/upcoming` - Show a list of games with upcoming release dates.
 
-`fc.link` - Provies a direct link to the league.
+`/link` - Provides a direct link to the league.
 
-`fc.version` - Current bot version
-
-`fc.help` - Help with using any of the bot's commands.
+`/version` - Shows the current bot version.
 
 ## Getting your League ID
 

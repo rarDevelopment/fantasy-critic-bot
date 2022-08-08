@@ -1,12 +1,13 @@
-const MessageReplyDetails = require('discord-helper-lib/MessageReplyDetails.js');
-const MessageSender = require('discord-helper-lib/MessageSender.js');
+const Eris = require('eris');
 const Message = require('discord-helper-lib/Message.js');
 const ConfigDataLayer = require('../api/ConfigDataLayer.js');
+const DiscordSlashCommand = require('discord-helper-lib/DiscordSlashCommand.js');
 
-class GetLeagueLink {
+class GetLeagueLink extends DiscordSlashCommand {
     constructor() {
-
+        super();
         this.name = 'link';
+        this.description = `Get a direct link to your league page.`;
         this.cooldown = 2;
         this.help = {
             message: `Get a direct link to your league page.`,
@@ -14,21 +15,13 @@ class GetLeagueLink {
             example: ['link'],
             inline: true,
         };
-
-        this.MessageSender = new MessageSender();
+        this.type = Eris.Constants.ApplicationCommandTypes.CHAT_INPUT;
     }
 
-    async execute(msg, args) {
-        const leagueChannel = await ConfigDataLayer.getLeagueChannel(msg.channel.id, msg.guildID);
+    async execute(interaction) {
+        const leagueChannel = await ConfigDataLayer.getLeagueChannel(interaction.channel.id, interaction.channel.guild.id);
         if (!leagueChannel) {
-            this.MessageSender.sendErrorMessage(
-                'No league configuration found for this channel.',
-                null,
-                msg.author.username,
-                msg.channel,
-                new MessageReplyDetails(msg.id, true),
-                null
-            );
+            interaction.createMessage('**Something went wrong:** No league configuration found for this channel.');
             return;
         }
 
@@ -37,8 +30,8 @@ class GetLeagueLink {
 
         const leagueUrl = `https://www.fantasycritic.games/league/${leagueId}/${year}`;
 
-        const messageToSend = new Message(leagueUrl, new MessageReplyDetails(msg.id, true));
-        this.MessageSender.sendMessage(messageToSend.buildMessage(), msg.channel, null);
+        const messageToSend = new Message(leagueUrl);
+        interaction.createMessage(messageToSend.buildMessage());
     }
 }
 module.exports = new GetLeagueLink();
