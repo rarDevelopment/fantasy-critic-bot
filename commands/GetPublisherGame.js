@@ -21,7 +21,6 @@ class GetLeague extends DiscordSlashCommand {
             example: ['pubgame Titanfall 2', 'pubgame mario'],
             inline: true,
         };
-
         this.type = Eris.Constants.ApplicationCommandTypes.CHAT_INPUT;
         this.options = [
             {
