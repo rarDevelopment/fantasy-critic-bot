@@ -53,8 +53,6 @@ bot.on("ready", function (evt) {
     mongoose.connection.once('open', function () {
         console.log('Connected to MongoDB');
     });
-
-    this.editStatus('online', { name: 'fc.help', type: 0 });
 });
 
 bot.on("interactionCreate", (interaction) => {
