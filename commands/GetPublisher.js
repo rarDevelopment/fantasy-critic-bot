@@ -12,7 +12,7 @@ const Message = require('discord-helper-lib/Message.js');
 class GetPublisher extends DiscordSlashCommand {
     constructor() {
         super();
-        this.name = 'pub';
+        this.name = 'publisher';
         this.description = `Get publisher information. You can search with just a portion of the name.`;
         this.cooldown = 0;
         this.help = {

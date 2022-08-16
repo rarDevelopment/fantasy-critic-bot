@@ -12,7 +12,7 @@ const DiscordSlashCommand = require('discord-helper-lib/DiscordSlashCommand.js')
 class GetLeague extends DiscordSlashCommand {
     constructor() {
         super();
-        this.name = 'pubgame';
+        this.name = 'game';
         this.description = `Get a game from publishers in the league.`;
         this.cooldown = 2;
         this.help = {
