@@ -35,12 +35,20 @@ const events = [
     new MessageCreate(bot)
 ];
 
-bot.once("ready", function (evt) {
+bot.once("ready", async function (evt) {
     new CommandRegistration().registerSlashCommands(bot, commands);
     SocketMessageListener.listenOnSocket(this.guilds);
+
+    const allCommands = await bot.getCommands();
+    const existingCommandNames = commands.map(c => c.name);
+    const commandsToDelete = allCommands.filter(c => !existingCommandNames.includes(c.name));
+    commandsToDelete.forEach(c => {
+        bot.deleteCommand(c.id);
+    });
 });
 
 new EventRegistration().registerEvents(bot, events);
+
 
 bot.on("ready", function (evt) {
     console.log(`Logged in as: ${bot.user.username} (${bot.user.id})`);
