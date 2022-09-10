@@ -45,3 +45,13 @@ exports.setLeagueChannel = function (leagueId, channelId, guildId, guildName, ye
                 });
         });
 };
+
+exports.unsetLeagueChannel = function (channelId, guildId) {
+    return LeagueChannel.deleteOne({ channelId: channelId, guildId: guildId })
+        .exec()
+        .then((response) => {
+            return response;
+        }).catch(err => {
+            console.log("Error deleting channel", err);
+        });
+};

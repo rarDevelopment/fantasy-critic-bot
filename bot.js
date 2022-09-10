@@ -11,6 +11,7 @@ const SocketMessageListener = require('./jobs/SocketMessageListener');
 const CommandRegistration = require('discord-helper-lib/CommandRegistration');
 const EventRegistration = require('discord-helper-lib/EventRegistration');
 const MessageCreate = require("./events/MessageCreate");
+const UnSetLeagueChannel = require("./commands/UnSetLeagueChannel");
 require('dotenv').config();
 
 const bot = new Eris.CommandClient(process.env.BOT_TOKEN, {}, {
@@ -28,6 +29,7 @@ const commands = [
     GetPublisherGame,
     GetUpcoming,
     SetLeagueChannel,
+    UnSetLeagueChannel,
     Version
 ];
 
@@ -36,15 +38,8 @@ const events = [
 ];
 
 bot.once("ready", async function (evt) {
-    new CommandRegistration().registerSlashCommands(bot, commands);
+    await new CommandRegistration().registerSlashCommands(bot, commands);
     SocketMessageListener.listenOnSocket(this.guilds);
-
-    const allCommands = await bot.getCommands();
-    const existingCommandNames = commands.map(c => c.name);
-    const commandsToDelete = allCommands.filter(c => !existingCommandNames.includes(c.name));
-    commandsToDelete.forEach(c => {
-        bot.deleteCommand(c.id);
-    });
 });
 
 new EventRegistration().registerEvents(bot, events);
