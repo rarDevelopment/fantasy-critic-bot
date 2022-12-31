@@ -6,6 +6,7 @@ const GetPublisher = require("./commands/GetPublisher");
 const GetPublisherGame = require("./commands/GetPublisherGame");
 const GetUpcoming = require("./commands/GetUpcoming");
 const SetLeagueChannel = require("./commands/SetLeagueChannel");
+const DownloadNewBotCommand = require("./commands/DownloadNewBotCommand");
 const Version = require("./commands/Version");
 const SocketMessageListener = require('./jobs/SocketMessageListener');
 const CommandRegistration = require('discord-helper-lib/CommandRegistration');
@@ -23,14 +24,14 @@ const bot = new Eris.CommandClient(process.env.BOT_TOKEN, {}, {
 });
 
 const commands = [
-    GetLeague,
-    GetLeagueLink,
-    GetPublisher,
-    GetPublisherGame,
-    GetUpcoming,
-    SetLeagueChannel,
-    UnSetLeagueChannel,
-    Version
+    new DownloadNewBotCommand(GetLeague.name, GetLeague.description),
+    new DownloadNewBotCommand(GetLeagueLink.name, GetLeagueLink.description),
+    new DownloadNewBotCommand(GetPublisher.name, GetPublisher.description),
+    new DownloadNewBotCommand(GetPublisherGame.name, GetPublisherGame.description),
+    new DownloadNewBotCommand(GetUpcoming.name, GetUpcoming.description),
+    new DownloadNewBotCommand(SetLeagueChannel.name, SetLeagueChannel.description),
+    new DownloadNewBotCommand(UnSetLeagueChannel.name, UnSetLeagueChannel.description),
+    new DownloadNewBotCommand(Version.name, Version.description),
 ];
 
 const events = [
