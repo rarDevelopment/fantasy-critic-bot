@@ -1,12 +1,12 @@
+# NOTE: This bot is no longer updated or active. You should use the OFFICIAL Fantasy Critic Bot, which I'll be working on going forward! You can find it [on the official site under "Official Fantasy Critic Bot"](https://www.fantasycritic.games/discord-bot).
+
 # Fantasy Critic Bot
 
 A bot for interacting with your [Fantasy Critic](https://www.fantasycritic.games/) league.
 
-NOTE: You should use the OFFICIAL Fantasy Critic Bot, which I'll be working on going forward! You can find it [on the official site under "Official Fantasy Critic Bot"](https://www.fantasycritic.games/community).
-
 # Inviting the Bot to your Server
 
-[Click here](https://discord.com/api/oauth2/authorize?client_id=936106026695028807&permissions=139586947136&scope=bot%20applications.commands) to add the bot to your server
+~~Click here to add the bot to your server~~
 
 ## Bot Features
 
